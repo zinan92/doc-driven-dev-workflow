@@ -1,0 +1,40 @@
+task_id: "TASK-2026-03-15-example-greeter"
+flow_name: "example-greeter"
+author: codex
+role: planner
+stage: user_flow
+status: draft
+steps:
+  - id: run_command
+    name: "Run greeter command"
+    actor: user
+    step_type: script
+    goal: "Start the greeter"
+    inputs:
+      - "command invocation"
+    outputs:
+      - "parsed name or default path"
+    validation:
+      type: schema
+      schema: "cli_input_v1"
+    next:
+      - print_greeting
+  - id: review_gate
+    name: "Approve product flow"
+    actor: human
+    step_type: human_gate
+    goal: "Confirm this user flow before planning"
+    inputs:
+      - "handoffs/20-user-flow.md"
+    outputs:
+      - approval_decision
+    validation:
+      type: enum
+      allowed:
+        - approve
+        - revise
+        - reject
+    next:
+      approve: "implementation_plan"
+      revise: "user_flow"
+      reject: end

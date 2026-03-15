@@ -1,0 +1,14 @@
+task_id: "TASK-2026-03-15-example-greeter"
+author: codex
+role: planner
+stage: classification
+status: completed
+next_actor: codex
+task_type: feature
+task_size: small
+confidence: high
+rationale:
+  - "The requested behavior is small and self-contained."
+  - "A single command plus tests is enough for the first release."
+success_condition: "A CLI command prints a greeting for a provided name and tests pass."
+scope_boundary: "No config files, no persistence, no rich CLI parsing beyond one optional name input."

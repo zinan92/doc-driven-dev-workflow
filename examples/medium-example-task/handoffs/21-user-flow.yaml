@@ -1,0 +1,40 @@
+task_id: "TASK-2026-03-15-medium-feed-workbench"
+flow_name: "medium-feed-workbench"
+author: codex
+role: planner
+stage: user_flow
+status: draft
+steps:
+  - id: open_feed
+    name: "Open feed workbench"
+    actor: user
+    step_type: script
+    goal: "Load prioritized feed items"
+    inputs:
+      - "home route request"
+    outputs:
+      - "feed read model response"
+    validation:
+      type: schema
+      schema: "feed_read_model_v1"
+    next:
+      - open_item
+  - id: approval_gate
+    name: "Approve PRD and flow"
+    actor: human
+    step_type: human_gate
+    goal: "Confirm the product flow before planning"
+    inputs:
+      - "handoffs/20-user-flow.md"
+    outputs:
+      - approval_decision
+    validation:
+      type: enum
+      allowed:
+        - approve
+        - revise
+        - reject
+    next:
+      approve: "implementation_plan"
+      revise: "user_flow"
+      reject: end

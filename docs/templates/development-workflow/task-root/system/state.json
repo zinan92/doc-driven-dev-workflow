@@ -1,0 +1,9 @@
+{
+  "task_id": "{{TASK_ID}}",
+  "status": "active",
+  "stage": "intake",
+  "round": 0,
+  "current_actor": "codex",
+  "last_artifact": "handoffs/00-intake.md",
+  "stop_reason": null
+}

@@ -1,0 +1,46 @@
+task_id: "TASK-2026-03-15-medium-feed-workbench"
+workflow_name: "medium-feed-workbench-delivery"
+status: draft
+steps:
+  - id: backend_batch
+    name: "Implement backend feed read model"
+    actor: claude_code
+    step_type: llm
+    inputs:
+      - handoffs/10-prd.md
+      - handoffs/30-implementation-plan.md
+      - handoffs/40-execution-prompt.md
+    outputs:
+      - handoffs/50-claude-batch-r1.md
+    validation:
+      type: required_sections
+      sections:
+        - Tasks Completed
+        - Files Changed
+        - Tests Run
+        - Result
+        - Next Proposed Batch
+    failure:
+      on_validation_error: retry_once
+      on_semantic_gap: escalate_to_human
+    next:
+      - backend_review
+  - id: backend_review
+    name: "Review backend batch"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/50-claude-batch-r1.md
+    outputs:
+      - handoffs/60-codex-review-r1.md
+    validation:
+      type: required_sections
+      sections:
+        - Findings
+        - Required Changes
+        - Gate Decision
+    failure:
+      on_validation_error: retry_once
+      on_semantic_gap: escalate_to_human
+    next:
+      - phase_gate_backend

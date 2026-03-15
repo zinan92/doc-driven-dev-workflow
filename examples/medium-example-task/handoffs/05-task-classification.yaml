@@ -1,0 +1,14 @@
+task_id: "TASK-2026-03-15-medium-feed-workbench"
+author: codex
+role: planner
+stage: classification
+status: completed
+next_actor: codex
+task_type: feature
+task_size: medium
+confidence: high
+rationale:
+  - "The task spans backend and UI work."
+  - "Downstream work depends on upstream contract stability."
+success_condition: "Backend read model and a basic frontend shell are both delivered under explicit phase gates."
+scope_boundary: "No auth, no collaboration features, no analytics beyond the feed workbench."

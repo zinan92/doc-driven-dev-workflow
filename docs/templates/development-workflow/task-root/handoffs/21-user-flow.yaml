@@ -1,0 +1,40 @@
+task_id: "{{TASK_ID}}"
+flow_name: "{{FLOW_NAME}}"
+author: codex
+role: planner
+stage: user_flow
+status: draft
+steps:
+  - id: entry
+    name: "{{ENTRY_STEP_NAME}}"
+    actor: user
+    step_type: script
+    goal: "{{ENTRY_GOAL}}"
+    inputs:
+      - "{{ENTRY_INPUT}}"
+    outputs:
+      - "{{ENTRY_OUTPUT}}"
+    validation:
+      type: schema
+      schema: "{{ENTRY_SCHEMA}}"
+    next:
+      - "{{NEXT_STEP_ID}}"
+  - id: review_gate
+    name: "{{GATE_NAME}}"
+    actor: human
+    step_type: human_gate
+    goal: "{{GATE_GOAL}}"
+    inputs:
+      - "{{GATE_INPUT}}"
+    outputs:
+      - approval_decision
+    validation:
+      type: enum
+      allowed:
+        - approve
+        - revise
+        - reject
+    next:
+      approve: "{{APPROVE_NEXT}}"
+      revise: "{{REVISE_NEXT}}"
+      reject: end

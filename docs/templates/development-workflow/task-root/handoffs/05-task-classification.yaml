@@ -1,0 +1,14 @@
+task_id: "{{TASK_ID}}"
+author: codex
+role: planner
+stage: classification
+status: completed
+next_actor: codex
+task_type: feature
+task_size: medium
+confidence: medium
+rationale:
+  - "{{RATIONALE_1}}"
+  - "{{RATIONALE_2}}"
+success_condition: "{{SUCCESS_CONDITION}}"
+scope_boundary: "{{SCOPE_BOUNDARY}}"
