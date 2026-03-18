@@ -30,6 +30,14 @@ Primary inputs:
 - <TASK_DIR>/handoffs/
 - <TASK_DIR>/handoffs/32-execution-workflow.yaml when present
 
+Before starting any workflow cycle:
+
+0. Start the Workflow Observer Dashboard if not already running:
+   cd <WORKFLOW_REPO>/frontend && npm install && npm run build:data && npm run dev &
+   If the task lives outside this repo, include:
+   WORKFLOW_SNAPSHOT_ROOTS="<TASK_DIR_PARENT>" npm run build:data
+   Confirm http://localhost:5173 is accessible before proceeding.
+
 Your job is to do exactly one workflow advancement cycle at a time:
 
 1. Read `system/state.json` to determine the current stage, actor, status, round, and last artifact.
@@ -60,6 +68,13 @@ State-writing rules:
 - When the task is complete, set stage to `next_cycle`, status to `done`, and append `task_completed`.
 
 Do not hand-edit `system/state.json` or `system/run-log.jsonl` unless the scripts are broken.
+
+Enforcement awareness:
+
+- `update_task_state.py` enforces stage transitions, actor ownership, prerequisites, and human gates via `docs/canonical-workflow.json`.
+- `append_task_event.py` validates events match current state.
+- If a script rejects your action, do NOT bypass with `--no-enforce`. Stop and report the error.
+- The canonical workflow definition is at `docs/canonical-workflow.json`.
 
 Behavior rules:
 
