@@ -1,0 +1,207 @@
+{
+  "version": "1.0",
+  "stages": [
+    {
+      "id": "clarify_objective",
+      "name": "Clarify Objective",
+      "phase": "intention_framing",
+      "ordinal": 0,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [],
+      "outputs": [{"path": "handoffs/00-intake.md", "required_sections": ["## Objective", "## Success Condition", "## Scope Boundary"]}],
+      "next": ["classify_task"],
+      "gate": null,
+      "notes": "If objective is ambiguous, agent must ask human and stop."
+    },
+    {
+      "id": "classify_task",
+      "name": "Classify Task & Estimate Size",
+      "phase": "intention_framing",
+      "ordinal": 1,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/00-intake.md"}],
+      "outputs": [
+        {"path": "handoffs/05-task-classification.yaml", "required_keys": ["task_type", "task_size"], "allowed_values": {"task_type": ["feature", "new_project", "bug_fix", "optimization"], "task_size": ["small", "medium", "large"]}},
+        {"path": "handoffs/08-scope-estimate.md", "required_sections": ["## Estimated Size", "## Estimate Summary"]}
+      ],
+      "next": ["draft_prd"],
+      "gate": null
+    },
+    {
+      "id": "draft_prd",
+      "name": "Draft PRD",
+      "phase": "document_authoring",
+      "ordinal": 2,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/00-intake.md"}, {"path": "handoffs/05-task-classification.yaml"}],
+      "outputs": [{"path": "handoffs/10-prd.md", "required_sections": ["## Purpose", "## Scope", "## Non-Goals", "## Contracts", "## Expected Behavior", "## Acceptance Criteria", "## Constraints", "## Terminology"]}],
+      "next": ["prd_reality_review"],
+      "gate": null
+    },
+    {
+      "id": "prd_reality_review",
+      "name": "Review PRD Against Reality",
+      "phase": "document_authoring",
+      "ordinal": 3,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/10-prd.md"}],
+      "outputs": [{"path": "handoffs/15-prd-reality-review.md", "required_sections": ["## Corrections", "## Baseline Assumptions"]}],
+      "next": ["draft_user_flow"],
+      "gate": null
+    },
+    {
+      "id": "draft_user_flow",
+      "name": "Draft User Flow",
+      "phase": "document_authoring",
+      "ordinal": 4,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/15-prd-reality-review.md"}],
+      "outputs": [
+        {"path": "handoffs/20-user-flow.md", "required_sections": ["## Entry Point", "## Steps", "## Completion"]},
+        {"path": "handoffs/21-user-flow.yaml", "required_keys": ["steps"], "step_required_keys": ["inputs", "outputs", "validation", "failure", "next"]}
+      ],
+      "next": ["human_approval_gate"],
+      "gate": null
+    },
+    {
+      "id": "human_approval_gate",
+      "name": "Human Approval Gate",
+      "phase": "document_authoring",
+      "ordinal": 5,
+      "actor": "human",
+      "step_type": "human_gate",
+      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/20-user-flow.md"}, {"path": "handoffs/21-user-flow.yaml"}],
+      "outputs": [{"path": "handoffs/25-human-approval.md", "required_frontmatter": {"author": "human", "status": "approved"}}],
+      "next": ["draft_implementation_plan"],
+      "gate": {"type": "human_approval", "check_field": "status", "required_value": "approved", "check_author": "human"}
+    },
+    {
+      "id": "draft_implementation_plan",
+      "name": "Draft Implementation Plan",
+      "phase": "document_authoring",
+      "ordinal": 6,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/20-user-flow.md"}, {"path": "handoffs/25-human-approval.md"}],
+      "outputs": [
+        {"path": "handoffs/30-implementation-plan.md", "required_sections": ["## Phases", "## Verification", "## Stop Conditions"]},
+        {"path": "handoffs/32-execution-workflow.yaml"}
+      ],
+      "next": ["review_implementation_plan"],
+      "gate": null
+    },
+    {
+      "id": "review_implementation_plan",
+      "name": "Review Implementation Plan",
+      "phase": "document_authoring",
+      "ordinal": 7,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/30-implementation-plan.md"}, {"path": "handoffs/32-execution-workflow.yaml"}],
+      "outputs": [{"path": "handoffs/35-plan-review.md", "required_sections": ["## Reviewed Plan", "## Clarified Execution Order"]}],
+      "next": ["write_execution_prompt"],
+      "gate": null
+    },
+    {
+      "id": "write_execution_prompt",
+      "name": "Write Execution Prompt",
+      "phase": "document_authoring",
+      "ordinal": 8,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/30-implementation-plan.md"}, {"path": "handoffs/35-plan-review.md"}],
+      "outputs": [{"path": "handoffs/40-execution-prompt.md", "required_sections": ["## Repository", "## Execution Order", "## Stop Conditions", "## Forbidden Behaviors"]}],
+      "next": ["claude_code_batch_execution"],
+      "gate": null
+    },
+    {
+      "id": "claude_code_batch_execution",
+      "name": "Claude Code Executes in Batches",
+      "phase": "code_execution",
+      "ordinal": 9,
+      "actor": "claude_code",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/40-execution-prompt.md"}],
+      "outputs": [{"path": "handoffs/50-claude-batch-r{round}.md", "required_sections": ["## Tasks Completed", "## Files Changed", "## Tests Run", "## Result", "## Next Proposed Batch"]}],
+      "next": ["codex_reviews_batch"],
+      "gate": null,
+      "notes": "Round-numbered output. Must not implement all at once for medium/large tasks."
+    },
+    {
+      "id": "codex_reviews_batch",
+      "name": "Codex Reviews Each Batch",
+      "phase": "code_execution",
+      "ordinal": 10,
+      "actor": "codex",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/50-claude-batch-r{round}.md"}],
+      "outputs": [{"path": "handoffs/60-codex-review-r{round}.md", "required_sections": ["## Findings", "## Required Changes", "## Gate Decision"], "gate_decision_enum": ["proceed", "fix_before_proceeding", "stop_and_rethink"]}],
+      "next": ["claude_code_batch_execution", "gate_major_phase", "final_revision"],
+      "gate": {"type": "review_gate", "decision_field": "## Gate Decision", "on_proceed": "final_revision", "on_fix": "claude_code_batch_execution", "on_stop": "blocked"},
+      "notes": "Next stage depends on gate decision and round number."
+    },
+    {
+      "id": "gate_major_phase",
+      "name": "Gate Each Major Phase",
+      "phase": "code_execution",
+      "ordinal": 11,
+      "actor": "codex",
+      "step_type": "human_gate",
+      "inputs": [],
+      "outputs": [],
+      "next": ["claude_code_batch_execution"],
+      "gate": {"type": "phase_gate", "applies_to": ["medium", "large"]},
+      "notes": "Only active for medium/large tasks. Small tasks skip this."
+    },
+    {
+      "id": "final_revision",
+      "name": "Final Revision",
+      "phase": "code_execution",
+      "ordinal": 12,
+      "actor": "claude_code",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/80-codex-review-r2.md"}],
+      "outputs": [{"path": "handoffs/90-claude-final.md", "required_sections": ["## Changes Made", "## Files Changed", "## Tests Run"]}],
+      "next": ["integrate_merge_cleanup"],
+      "gate": null
+    },
+    {
+      "id": "integrate_merge_cleanup",
+      "name": "Integrate, Merge, and Clean Up",
+      "phase": "integration_cleanup",
+      "ordinal": 13,
+      "actor": "human",
+      "step_type": "human_gate",
+      "inputs": [{"path": "handoffs/90-claude-final.md"}],
+      "outputs": [{"path": "handoffs/95-integration-checklist.md", "checklist_must_complete": true}],
+      "next": ["next_cycle"],
+      "gate": {"type": "checklist_gate", "all_items_checked": true}
+    },
+    {
+      "id": "next_cycle",
+      "name": "Reflect and Define Next Cycle",
+      "phase": "integration_cleanup",
+      "ordinal": 14,
+      "actor": "human",
+      "step_type": "llm",
+      "inputs": [{"path": "handoffs/95-integration-checklist.md"}],
+      "outputs": [{"path": "handoffs/99-next-cycle.md"}],
+      "next": [],
+      "gate": null
+    }
+  ],
+  "round_limits": {
+    "small": {"max_review_rounds": 2, "max_revision_rounds": 1},
+    "medium": {"max_review_rounds": 4, "max_revision_rounds": 2},
+    "large": {"max_review_rounds": 6, "max_revision_rounds": 3}
+  },
+  "template_markers": [
+    "{{TASK_ID}}", "{{DATE}}", "{{SHORT_NAME}}", "{{FEATURE_NAME}}",
+    "{{REPO_PATH}}", "<!-- TODO", "_Replace this"
+  ]
+}

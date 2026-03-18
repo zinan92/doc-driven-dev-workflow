@@ -1,0 +1,250 @@
+# DOCUMENTATION ONLY — scripts read docs/canonical-workflow.json
+# This file is a human-readable mirror of canonical-workflow.json.
+# Do NOT parse this file in scripts. The JSON is the authoritative source of truth.
+
+version: "1.0"
+
+# ─────────────────────────────────────────────
+# PHASES OVERVIEW
+# ─────────────────────────────────────────────
+# Phase 1: intention_framing    — stages 0–1
+# Phase 2: document_authoring   — stages 2–8
+# Phase 3: code_execution       — stages 9–12
+# Phase 4: integration_cleanup  — stages 13–14
+
+stages:
+
+  # ── PHASE 1: intention_framing ─────────────
+
+  - ordinal: 0
+    id: clarify_objective
+    name: "Clarify Objective"
+    actor: codex
+    step_type: llm
+    outputs:
+      - handoffs/00-intake.md
+        # required_sections: Objective, Success Condition, Scope Boundary
+    notes: >
+      If objective is ambiguous, agent must ask human and stop.
+
+  - ordinal: 1
+    id: classify_task
+    name: "Classify Task & Estimate Size"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/00-intake.md
+    outputs:
+      - handoffs/05-task-classification.yaml
+        # required_keys: task_type, task_size
+        # task_type values: feature | new_project | bug_fix | optimization
+        # task_size values: small | medium | large
+      - handoffs/08-scope-estimate.md
+        # required_sections: Estimated Size, Estimate Summary
+
+  # ── PHASE 2: document_authoring ────────────
+
+  - ordinal: 2
+    id: draft_prd
+    name: "Draft PRD"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/00-intake.md
+      - handoffs/05-task-classification.yaml
+    outputs:
+      - handoffs/10-prd.md
+        # required_sections: Purpose, Scope, Non-Goals, Contracts,
+        #   Expected Behavior, Acceptance Criteria, Constraints, Terminology
+
+  - ordinal: 3
+    id: prd_reality_review
+    name: "Review PRD Against Reality"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/10-prd.md
+    outputs:
+      - handoffs/15-prd-reality-review.md
+        # required_sections: Corrections, Baseline Assumptions
+
+  - ordinal: 4
+    id: draft_user_flow
+    name: "Draft User Flow"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/10-prd.md
+      - handoffs/15-prd-reality-review.md
+    outputs:
+      - handoffs/20-user-flow.md
+        # required_sections: Entry Point, Steps, Completion
+      - handoffs/21-user-flow.yaml
+        # required_keys: steps
+        # each step requires: inputs, outputs, validation, failure, next
+
+  - ordinal: 5
+    id: human_approval_gate
+    name: "Human Approval Gate"
+    actor: human
+    step_type: human_gate
+    inputs:
+      - handoffs/10-prd.md
+      - handoffs/20-user-flow.md
+      - handoffs/21-user-flow.yaml
+    outputs:
+      - handoffs/25-human-approval.md
+        # required_frontmatter: author=human, status=approved
+    gate:
+      type: human_approval
+      check_field: status
+      required_value: approved
+      check_author: human
+
+  - ordinal: 6
+    id: draft_implementation_plan
+    name: "Draft Implementation Plan"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/10-prd.md
+      - handoffs/20-user-flow.md
+      - handoffs/25-human-approval.md
+    outputs:
+      - handoffs/30-implementation-plan.md
+        # required_sections: Phases, Verification, Stop Conditions
+      - handoffs/32-execution-workflow.yaml
+
+  - ordinal: 7
+    id: review_implementation_plan
+    name: "Review Implementation Plan"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/30-implementation-plan.md
+      - handoffs/32-execution-workflow.yaml
+    outputs:
+      - handoffs/35-plan-review.md
+        # required_sections: Reviewed Plan, Clarified Execution Order
+
+  - ordinal: 8
+    id: write_execution_prompt
+    name: "Write Execution Prompt"
+    actor: codex
+    step_type: llm
+    inputs:
+      - handoffs/30-implementation-plan.md
+      - handoffs/35-plan-review.md
+    outputs:
+      - handoffs/40-execution-prompt.md
+        # required_sections: Repository, Execution Order, Stop Conditions,
+        #   Forbidden Behaviors
+
+  # ── PHASE 3: code_execution ────────────────
+
+  - ordinal: 9
+    id: claude_code_batch_execution
+    name: "Claude Code Executes in Batches"
+    actor: claude_code
+    step_type: llm
+    inputs:
+      - handoffs/40-execution-prompt.md
+    outputs:
+      - "handoffs/50-claude-batch-r{round}.md"
+        # required_sections: Tasks Completed, Files Changed, Tests Run,
+        #   Result, Next Proposed Batch
+    notes: >
+      Round-numbered output. Must not implement all at once for
+      medium/large tasks.
+
+  - ordinal: 10
+    id: codex_reviews_batch
+    name: "Codex Reviews Each Batch"
+    actor: codex
+    step_type: llm
+    inputs:
+      - "handoffs/50-claude-batch-r{round}.md"
+    outputs:
+      - "handoffs/60-codex-review-r{round}.md"
+        # required_sections: Findings, Required Changes, Gate Decision
+        # Gate Decision enum: proceed | fix_before_proceeding | stop_and_rethink
+    gate:
+      type: review_gate
+      decision_field: "## Gate Decision"
+      on_proceed: final_revision
+      on_fix: claude_code_batch_execution
+      on_stop: blocked
+    notes: Next stage depends on gate decision and round number.
+
+  - ordinal: 11
+    id: gate_major_phase
+    name: "Gate Each Major Phase"
+    actor: codex
+    step_type: human_gate
+    gate:
+      type: phase_gate
+      applies_to: [medium, large]
+    notes: Only active for medium/large tasks. Small tasks skip this.
+
+  - ordinal: 12
+    id: final_revision
+    name: "Final Revision"
+    actor: claude_code
+    step_type: llm
+    inputs:
+      - handoffs/80-codex-review-r2.md
+    outputs:
+      - handoffs/90-claude-final.md
+        # required_sections: Changes Made, Files Changed, Tests Run
+
+  # ── PHASE 4: integration_cleanup ───────────
+
+  - ordinal: 13
+    id: integrate_merge_cleanup
+    name: "Integrate, Merge, and Clean Up"
+    actor: human
+    step_type: human_gate
+    inputs:
+      - handoffs/90-claude-final.md
+    outputs:
+      - handoffs/95-integration-checklist.md
+        # checklist_must_complete: true
+    gate:
+      type: checklist_gate
+      all_items_checked: true
+
+  - ordinal: 14
+    id: next_cycle
+    name: "Reflect and Define Next Cycle"
+    actor: human
+    step_type: llm
+    inputs:
+      - handoffs/95-integration-checklist.md
+    outputs:
+      - handoffs/99-next-cycle.md
+
+# ─────────────────────────────────────────────
+# ROUND LIMITS BY TASK SIZE
+# ─────────────────────────────────────────────
+round_limits:
+  small:
+    max_review_rounds: 2
+    max_revision_rounds: 1
+  medium:
+    max_review_rounds: 4
+    max_revision_rounds: 2
+  large:
+    max_review_rounds: 6
+    max_revision_rounds: 3
+
+# ─────────────────────────────────────────────
+# TEMPLATE MARKERS (unfilled template detection)
+# ─────────────────────────────────────────────
+template_markers:
+  - "{{TASK_ID}}"
+  - "{{DATE}}"
+  - "{{SHORT_NAME}}"
+  - "{{FEATURE_NAME}}"
+  - "{{REPO_PATH}}"
+  - "<!-- TODO"
+  - "_Replace this"
