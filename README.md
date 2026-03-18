@@ -23,7 +23,7 @@
 
 你可以把它理解为一套轻量但严格的“开发协议”：人负责目标、取舍和审批，`Codex` 负责规划和评审，`Claude Code` 负责实现与修订，所有阶段性结果都落在仓库里的文件系统中。
 
-现在仓库还额外包含一个 `Workflow Driven Developer` 前端原型：它读取 `example-task` 的 `state.json`、`run-log.jsonl` 和 `handoffs/*.md`，把黑箱式的 doc-driven task 变成可回放、可观察的 workflow cockpit。
+现在仓库还额外包含一个 `Workflow Driven Developer` 前端原型：它会扫描 repo 内 `examples/` 和 `tasks/` 下符合协议的 task 目录，读取其中的 `state.json`、`run-log.jsonl` 和 `handoffs/*.md`，把黑箱式的 doc-driven task 变成可观察的 workflow cockpit。
 
 ## 架构
 
@@ -96,7 +96,7 @@ npm run build:data
 npm run dev
 ```
 
-默认会读取 `examples/example-task/`，把 doc-driven task 可视化成 read-only replay cockpit。
+默认会扫描 `examples/` 和 `tasks/` 下的本地 workflow snapshots，把 doc-driven task 可视化成三栏式 read-only observer cockpit。左侧是 task rail，中间是 workflow canvas，右侧是 inspector。
 
 ## 功能一览
 
@@ -106,8 +106,10 @@ npm run dev
 | Task scaffolding | 通过脚本生成标准化任务目录、占位符和初始 system files | 已完成 |
 | Structure validation | 校验 handoff 文件、frontmatter、状态摘要和 `state.json` 关键字段 | 已完成 |
 | Next-step recommendation | 基于 `system/state.json` 给出当前任务下一步建议 | 已完成 |
+| Workflow state writer scripts | 用脚本稳定写入 `state.json` 和 `run-log.jsonl`，供 observer 读取 | 已完成 |
 | Example task references | 提供 small / medium 示例任务，帮助理解产物形态 | 已完成 |
-| Workflow Driven Developer | 基于 `example-task` 的 local-first observer dashboard，展示 15-stage workflow、artifacts 和 replay | 原型已完成 |
+| Workflow Driven Developer | local-first observer dashboard，自动读取 repo 内 task snapshots，展示 workflow canvas、artifacts 和 replay | 原型已完成 |
+| Agent-as-runner prompt | 让 Claude/Codex 直接读取 workflow 并通过脚本推进状态 | 已完成 |
 | Packaging / CI automation | 包管理、CI、自动 PR 流程等能力暂未内建 | 计划中 |
 
 ## API 参考
@@ -117,6 +119,8 @@ npm run dev
 | `CLI` | `python3 scripts/scaffold_dev_workflow_task.py --name "<task>" --repo-path <repo>` | 创建新的工作流任务目录 |
 | `CLI` | `python3 scripts/validate_dev_workflow_task.py tasks/<task-id>` | 校验任务目录结构是否满足协议要求 |
 | `CLI` | `python3 scripts/dev_workflow_next_step.py tasks/<task-id>` | 根据当前 stage 输出推荐下一步动作 |
+| `CLI` | `python3 scripts/update_task_state.py tasks/<task-id> --stage <stage-id> --artifact <path>` | 通过稳定接口更新 observer 可读状态 |
+| `CLI` | `python3 scripts/append_task_event.py tasks/<task-id> --event <event-name> --artifact <path>` | 通过稳定接口追加结构化 workflow 事件 |
 | `DOC` | `docs/development-workflow.md` | 规范任务生命周期、角色分工和阶段契约 |
 | `REF` | `examples/example-task/README.md` | 展示小型任务的完整参考产物 |
 | `WEB` | `frontend/` | 本地 workflow observer dashboard 原型 |
@@ -182,13 +186,16 @@ doc-driven-dev-workflow/
 
 当前原型支持：
 
-- 单 task 观察
-- 完整 15-stage canonical workflow 展示
-- 右侧 inspector 查看 step detail 和 artifacts
-- 基于 example task 的手动 replay
+- 左侧 `Task Rail` 浏览 repo-local workflow snapshots
+- 中间 `Workflow Canvas` 按 4 个 phase 展示完整 15-stage canonical workflow
+- 右侧 `Inspector` 查看 step detail、artifacts、working folder 和 context
+- 基于本地 snapshots 的手动 replay
+- 通过 writer scripts 接入真实任务状态
+- 通过 agent-runner prompt 让 agent 读取 workflow 并推进状态
 
 相关文档：
 
 - `docs/workflow-driven-developer/front-end-prd.md`
 - `docs/workflow-driven-developer/user-flow.md`
 - `docs/workflow-driven-developer/observer-data-model.md`
+- `docs/workflow-driven-developer/agent-runner-prompt.md`

@@ -68,6 +68,14 @@ class ScaffoldTaskTests(unittest.TestCase):
                 state = json.load(fh)
             self.assertEqual(state["task_id"], task_id)
             self.assertEqual(state["current_actor"], "codex")
+            self.assertEqual(state["stage"], "clarify_objective")
+            self.assertEqual(state["current_phase"], "intention_framing")
+
+            run_log = (task_dir / "system" / "run-log.jsonl").read_text().strip().splitlines()
+            self.assertEqual(len(run_log), 1)
+            first_event = json.loads(run_log[0])
+            self.assertEqual(first_event["event"], "task_created")
+            self.assertEqual(first_event["stage"], "clarify_objective")
 
     def test_scaffold_task_refuses_to_overwrite_existing_directory(self):
         module = load_module()

@@ -1,120 +1,118 @@
-import { useMemo } from "react";
-import { loadExampleTask } from "./lib/load-example-task";
+import { useMemo, useState } from "react";
+import { loadWorkflowSnapshots } from "./lib/load-workflow-snapshots";
 import { mapArtifactsToStages } from "./lib/map-artifacts-to-stages";
 import { mapRunLogToEvents } from "./lib/map-run-log-to-events";
-import { buildReplaySnapshots } from "./lib/build-replay-snapshots";
 import { renderArtifactContent } from "./lib/render-artifact-content";
 import { buildSchemaContent } from "./lib/build-schema-content";
 import { useReplayState } from "./state/use-replay-state";
 import { SummaryBar } from "./components/summary-bar";
-import { WorkflowGraph } from "./components/workflow-graph";
-import { StepDetailPanel } from "./components/step-detail-panel";
-import { ArtifactPreviewPanel } from "./components/artifact-preview-panel";
-import { ReplayTimeline } from "./components/replay-timeline";
+import { TaskRail } from "./components/task-rail";
+import { WorkflowCanvas } from "./components/workflow-canvas";
+import { WorkflowInspector } from "./components/workflow-inspector";
 
-const ARTIFACT_TABS = ["Artifact", "Schema", "State", "Event"] as const;
+const ARTIFACT_TABS = ["Artifact", "Schema", "State"] as const;
 
 export default function App() {
-  const snapshot = useMemo(() => loadExampleTask(), []);
+  const collection = useMemo(() => loadWorkflowSnapshots(), []);
+  const [selectedTaskId, setSelectedTaskId] = useState(
+    () => collection.snapshots.find((snapshot) => snapshot.state.status === "active")?.id ?? collection.snapshots[0]?.id ?? "",
+  );
+  const snapshot = collection.snapshots.find((item) => item.id === selectedTaskId) ?? collection.snapshots[0];
   const steps = useMemo(
-    () => mapArtifactsToStages({ state: snapshot.state, handoffs: snapshot.handoffs, runLog: snapshot.runLog }),
+    () =>
+      snapshot
+        ? mapArtifactsToStages({ state: snapshot.state, handoffs: snapshot.handoffs, runLog: snapshot.runLog })
+        : [],
     [snapshot],
   );
-  const timelineEvents = useMemo(() => mapRunLogToEvents(snapshot.handoffs, snapshot.runLog), [snapshot]);
-  const replaySnapshots = useMemo(() => buildReplaySnapshots(timelineEvents), [timelineEvents]);
+  const timelineEvents = useMemo(
+    () => (snapshot ? mapRunLogToEvents(snapshot.handoffs, snapshot.runLog) : []),
+    [snapshot],
+  );
 
-  const { selectedStepId, selectedEventIndex, activeTab, selectStep, selectEvent, setActiveTab } =
-    useReplayState(snapshot.state.stage);
+  const { selectedStepId, activeTab, selectStep, setActiveTab } = useReplayState(
+    snapshot?.state.stage ?? "clarify_objective",
+  );
 
   const selectedStep = steps.find((s) => s.id === selectedStepId) ?? steps[0];
 
-  const effectiveSteps = useMemo(() => {
-    if (selectedEventIndex === null) return steps;
-    const snap = replaySnapshots[selectedEventIndex];
-    if (!snap) return steps;
-    return steps.map((s) => {
-      if (snap.completedStageIds.includes(s.id)) return { ...s, status: "completed" as const };
-      if (s.id === snap.activeStageId) return { ...s, status: "selected" as const };
-      return { ...s, status: "not_reached" as const };
-    });
-  }, [steps, selectedEventIndex, replaySnapshots]);
-
-  const effectiveSummary = useMemo(() => {
-    if (selectedEventIndex === null) {
-      return {
-        stage: snapshot.state.stage,
-        actor: snapshot.state.current_actor,
-        status: snapshot.state.status,
-      };
-    }
-    const snap = replaySnapshots[selectedEventIndex];
-    return snap
-      ? { stage: snap.activeStageId, actor: snap.actor, status: "active" as const }
-      : { stage: snapshot.state.stage, actor: snapshot.state.current_actor, status: snapshot.state.status };
-  }, [snapshot, selectedEventIndex, replaySnapshots]);
+  const stageTimestamps = useMemo(
+    () =>
+      Object.fromEntries(
+        timelineEvents.map((event) => [event.stageId, event.timestamp]),
+      ) as Record<string, string>,
+    [timelineEvents],
+  );
 
   const tabContent = useMemo(() => {
+    if (!snapshot || !selectedStep) return "";
     if (activeTab === "Schema") return buildSchemaContent(selectedStep);
     if (activeTab === "State") return JSON.stringify(snapshot.state, null, 2);
-    if (activeTab === "Event" && selectedEventIndex !== null) {
-      const ev = timelineEvents[selectedEventIndex];
-      return ev ? JSON.stringify(ev, null, 2) : "Select a timeline event";
-    }
-    if (activeTab === "Event") return "Select a timeline event to preview";
     return renderArtifactContent(selectedStep.artifactContent, selectedStep.evidence);
-  }, [activeTab, selectedStep, snapshot, selectedEventIndex, timelineEvents]);
+  }, [activeTab, selectedStep, snapshot]);
 
   const artifactTitle = useMemo(() => {
+    if (!selectedStep) return "No step selected";
     if (activeTab === "Schema") return `${selectedStep.id} — step contract`;
     if (activeTab === "State") return "system/state.json";
-    if (activeTab === "Event") return "timeline event";
     if (selectedStep.outputs.length > 0) return selectedStep.outputs[0];
     return selectedStep.id;
   }, [activeTab, selectedStep]);
 
-  const handleTimelineSelect = (eventId: string, stageId: string) => {
-    const idx = Number(eventId);
-    selectEvent(idx, stageId);
-  };
+  if (!snapshot || !selectedStep) {
+    return <div className="min-h-screen bg-gray-950 p-6 text-gray-200">No workflow snapshots available.</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-lg font-bold tracking-tight">Workflow Driven Developer</h1>
-        <span className="text-xs text-gray-600 font-mono">v1 read-only cockpit</span>
-      </header>
+    <div className="min-h-screen bg-[#0b0b0b] text-gray-100">
+      <div className="grid min-h-screen grid-cols-[260px_minmax(0,1fr)_380px] gap-4 p-4">
+        <TaskRail
+          tasks={collection.snapshots.map((task) => ({
+            id: task.id,
+            label: task.label,
+            status: task.state.status,
+            sourceDir: task.sourceDir,
+          }))}
+          selectedTaskId={snapshot.id}
+          onSelect={setSelectedTaskId}
+        />
 
-      <SummaryBar
-        taskId={snapshot.state.task_id}
-        workflowName="Doc-Driven Development"
-        status={effectiveSummary.status}
-        currentStage={effectiveSummary.stage}
-        currentActor={effectiveSummary.actor}
-        round={snapshot.state.round}
-      />
+        <main className="flex min-h-[calc(100vh-2rem)] flex-col gap-4">
+          <header className="flex items-center justify-between rounded-2xl border border-gray-800 bg-[#111111] px-5 py-4">
+            <div>
+              <h1 className="text-lg font-bold tracking-tight">Workflow Driven Developer</h1>
+              <p className="mt-1 text-sm text-gray-500">Local-first observer for doc-driven development workflows.</p>
+            </div>
+            <span className="text-xs text-gray-600 font-mono">v1.1 workflow-first cockpit</span>
+          </header>
 
-      <WorkflowGraph steps={effectiveSteps} selectedStepId={selectedStepId} onSelect={selectStep} />
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-4">
-          <StepDetailPanel step={selectedStep} />
-        </div>
-        <div className="flex flex-col gap-4">
-          <ArtifactPreviewPanel
-            tabs={[...ARTIFACT_TABS]}
-            activeTab={activeTab}
-            onChangeTab={setActiveTab}
-            artifactTitle={artifactTitle}
-            content={tabContent}
+          <SummaryBar
+            taskId={snapshot.state.task_id}
+            workflowName={snapshot.label}
+            status={snapshot.state.status}
+            currentStage={snapshot.state.stage}
+            currentActor={snapshot.state.current_actor}
+            round={snapshot.state.round}
           />
-        </div>
-      </div>
 
-      <ReplayTimeline
-        events={timelineEvents}
-        selectedEventId={selectedEventIndex !== null ? String(selectedEventIndex) : null}
-        onSelect={handleTimelineSelect}
-      />
+          <WorkflowCanvas
+            steps={steps}
+            selectedStepId={selectedStepId}
+            onSelect={selectStep}
+            stageTimestamps={stageTimestamps}
+          />
+        </main>
+
+        <WorkflowInspector
+          snapshot={snapshot}
+          step={selectedStep}
+          activeTab={activeTab}
+          tabs={[...ARTIFACT_TABS]}
+          artifactTitle={artifactTitle}
+          content={tabContent}
+          onChangeTab={setActiveTab}
+        />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,12 @@
 export type Actor = "human" | "codex" | "claude_code";
 export type NodeStatus = "not_reached" | "selected" | "completed" | "waiting" | "blocked";
-export type TaskStatus = "active" | "done" | "blocked";
+export type TaskStatus = "active" | "waiting" | "done" | "blocked";
 export type StepType = "llm" | "script" | "human_gate";
+export type WorkflowPhase =
+  | "intention_framing"
+  | "document_authoring"
+  | "code_execution"
+  | "integration_cleanup";
 
 export interface CanonicalStage {
   readonly id: string;
@@ -40,11 +45,13 @@ export interface RunLogEvent {
 export interface TaskState {
   readonly task_id: string;
   readonly status: TaskStatus;
+  readonly current_phase?: WorkflowPhase;
   readonly stage: string;
   readonly round: number;
   readonly current_actor: Actor;
   readonly last_artifact: string;
-  readonly stop_reason: string;
+  readonly updated_at?: string;
+  readonly stop_reason: string | null;
 }
 
 export interface HandoffArtifact {
@@ -53,11 +60,19 @@ export interface HandoffArtifact {
   readonly frontmatter: Record<string, unknown>;
 }
 
-export interface ExampleTaskSnapshot {
+export interface WorkflowSnapshot {
+  readonly id: string;
+  readonly label: string;
+  readonly sourceDir: string;
   readonly state: TaskState;
   readonly statusMd: string;
   readonly handoffs: readonly HandoffArtifact[];
   readonly runLog: readonly RunLogEvent[];
+}
+
+export interface WorkflowSnapshotCollection {
+  readonly generatedAt: string;
+  readonly snapshots: readonly WorkflowSnapshot[];
 }
 
 export interface ReplaySnapshot {

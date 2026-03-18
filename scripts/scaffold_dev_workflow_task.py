@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 from datetime import date
@@ -84,7 +85,23 @@ def scaffold_task(
     )
 
     system_dir = task_dir / "system"
-    (system_dir / "run-log.jsonl").touch()
+    state = json.loads((system_dir / "state.json").read_text())
+    (system_dir / "run-log.jsonl").write_text(
+        json.dumps(
+            {
+                "timestamp": f"{current_date}T00:00:00Z",
+                "event": "task_created",
+                "task_id": state["task_id"],
+                "phase": state.get("current_phase", "intention_framing"),
+                "stage": state["stage"],
+                "actor": state["current_actor"],
+                "artifact": state["last_artifact"],
+                "status": state["status"],
+                "round": state["round"],
+            }
+        )
+        + "\n"
+    )
     (system_dir / "lock").touch()
     return task_dir
 

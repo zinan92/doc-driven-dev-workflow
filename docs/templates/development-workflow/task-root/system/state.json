@@ -1,9 +1,11 @@
 {
   "task_id": "{{TASK_ID}}",
   "status": "active",
-  "stage": "intake",
+  "current_phase": "intention_framing",
+  "stage": "clarify_objective",
   "round": 0,
   "current_actor": "codex",
   "last_artifact": "handoffs/00-intake.md",
+  "updated_at": null,
   "stop_reason": null
 }

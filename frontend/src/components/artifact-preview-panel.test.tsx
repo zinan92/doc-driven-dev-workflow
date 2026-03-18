@@ -4,7 +4,7 @@ import { ArtifactPreviewPanel } from "./artifact-preview-panel";
 test("renders artifact content and title", () => {
   render(
     <ArtifactPreviewPanel
-      tabs={["Artifact", "Schema", "State", "Event"]}
+      tabs={["Artifact", "Schema", "State"]}
       activeTab="Artifact"
       onChangeTab={() => {}}
       artifactTitle="handoffs/20-user-flow.md"
@@ -16,10 +16,10 @@ test("renders artifact content and title", () => {
   expect(screen.getByText("# User Flow")).toBeInTheDocument();
 });
 
-test("renders all four tabs including Schema", () => {
+test("renders artifact, schema, and state tabs", () => {
   render(
     <ArtifactPreviewPanel
-      tabs={["Artifact", "Schema", "State", "Event"]}
+      tabs={["Artifact", "Schema", "State"]}
       activeTab="Schema"
       onChangeTab={() => {}}
       artifactTitle="draft_prd — step contract"
@@ -30,5 +30,5 @@ test("renders all four tabs including Schema", () => {
   expect(screen.getByText("Artifact")).toBeInTheDocument();
   expect(screen.getByText("Schema")).toBeInTheDocument();
   expect(screen.getByText("State")).toBeInTheDocument();
-  expect(screen.getByText("Event")).toBeInTheDocument();
+  expect(screen.queryByText("Event")).not.toBeInTheDocument();
 });

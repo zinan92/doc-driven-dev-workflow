@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SCAFFOLD_SCRIPT = ROOT / "scripts" / "scaffold_dev_workflow_task.py"
 VALIDATE_SCRIPT = ROOT / "scripts" / "validate_dev_workflow_task.py"
 NEXT_STEP_SCRIPT = ROOT / "scripts" / "dev_workflow_next_step.py"
+UPDATE_STATE_SCRIPT = ROOT / "scripts" / "update_task_state.py"
+APPEND_EVENT_SCRIPT = ROOT / "scripts" / "append_task_event.py"
 TEMPLATE_ROOT = ROOT / "docs" / "templates" / "development-workflow" / "task-root"
 
 
@@ -67,12 +69,12 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
     def test_next_step_uses_stage_mapping(self):
         next_step = load_module(NEXT_STEP_SCRIPT, "dev_workflow_next_step")
-        tmpdir, task_dir = self.make_task(stage="user_flow", status="active")
+        tmpdir, task_dir = self.make_task(stage="draft_user_flow", status="active")
         self.addCleanup(tmpdir.cleanup)
 
         result = next_step.get_next_step(task_dir)
 
-        self.assertEqual(result["stage"], "user_flow")
+        self.assertEqual(result["stage"], "draft_user_flow")
         self.assertIn("Human approval", result["message"])
         self.assertIn("handoffs/25-human-approval.md", result["action"])
 
@@ -128,6 +130,54 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
         self.assertEqual(result["ok"], False)
         self.assertTrue(any("Required Changes" in error for error in result["errors"]))
+
+    def test_update_task_state_writes_observer_ready_fields(self):
+        update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
+        tmpdir, task_dir = self.make_task(stage="clarify_objective", status="active")
+        self.addCleanup(tmpdir.cleanup)
+
+        state = update_state.update_task_state(
+            task_dir,
+            stage="draft_user_flow",
+            status="waiting",
+            current_actor="human",
+            round=1,
+            last_artifact="handoffs/20-user-flow.md",
+            stop_reason="awaiting_approval",
+            updated_at="2026-03-18T13:00:00Z",
+        )
+
+        self.assertEqual(state["stage"], "draft_user_flow")
+        self.assertEqual(state["current_phase"], "document_authoring")
+        self.assertEqual(state["status"], "waiting")
+        self.assertEqual(state["current_actor"], "human")
+        self.assertEqual(state["round"], 1)
+        self.assertEqual(state["last_artifact"], "handoffs/20-user-flow.md")
+        self.assertEqual(state["stop_reason"], "awaiting_approval")
+        self.assertEqual(state["updated_at"], "2026-03-18T13:00:00Z")
+
+    def test_append_task_event_uses_current_state_defaults(self):
+        append_event = load_module(APPEND_EVENT_SCRIPT, "append_task_event")
+        tmpdir, task_dir = self.make_task(stage="draft_prd", status="active")
+        self.addCleanup(tmpdir.cleanup)
+
+        event = append_event.append_task_event(
+            task_dir,
+            event="artifact_written",
+            timestamp="2026-03-18T13:10:00Z",
+            artifact="handoffs/10-prd.md",
+        )
+
+        self.assertEqual(event["task_id"], "TASK-2026-03-15-helper-demo")
+        self.assertEqual(event["phase"], "document_authoring")
+        self.assertEqual(event["stage"], "draft_prd")
+        self.assertEqual(event["actor"], "codex")
+        self.assertEqual(event["artifact"], "handoffs/10-prd.md")
+        self.assertEqual(event["status"], "active")
+        self.assertEqual(event["round"], 0)
+
+        lines = (task_dir / "system" / "run-log.jsonl").read_text().strip().splitlines()
+        self.assertTrue(any(json.loads(line)["event"] == "artifact_written" for line in lines))
 
 
 if __name__ == "__main__":

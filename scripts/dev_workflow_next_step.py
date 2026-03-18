@@ -9,21 +9,36 @@ from pathlib import Path
 
 
 STAGE_ACTIONS = {
-    "intake": ("Codex should classify the task and estimate scope.", "Write handoffs/05-task-classification.yaml and handoffs/08-scope-estimate.md"),
-    "classification": ("Codex should draft the PRD.", "Write handoffs/10-prd.md"),
-    "scope_estimation": ("Codex should draft the PRD.", "Write handoffs/10-prd.md"),
-    "prd": ("Codex should review the PRD against reality.", "Write handoffs/15-prd-reality-review.md"),
+    "clarify_objective": ("Codex should classify the task and estimate scope.", "Write handoffs/05-task-classification.yaml and handoffs/08-scope-estimate.md"),
+    "classify_task": ("Codex should draft the PRD.", "Write handoffs/10-prd.md"),
+    "draft_prd": ("Codex should review the PRD against reality.", "Write handoffs/15-prd-reality-review.md"),
     "prd_reality_review": ("Codex should draft the user flow.", "Write handoffs/20-user-flow.md and handoffs/21-user-flow.yaml"),
-    "user_flow": ("Human approval is required before planning.", "Write handoffs/25-human-approval.md"),
-    "approval": ("Codex should draft the implementation plan.", "Write handoffs/30-implementation-plan.md"),
-    "implementation_plan": ("Codex should review the implementation plan.", "Write handoffs/35-plan-review.md"),
-    "plan_review": ("Codex should write the execution prompt.", "Write handoffs/40-execution-prompt.md"),
-    "execution_prompt": ("Claude Code should start implementation.", "Write handoffs/50-claude-batch-r1.md"),
-    "implementation_batch": ("Codex should review the latest Claude batch.", "Write the next Codex review handoff"),
-    "review": ("Claude Code should apply the required changes.", "Write the next Claude revision handoff"),
+    "draft_user_flow": ("Human approval is required before planning.", "Write handoffs/25-human-approval.md"),
+    "human_approval_gate": ("Codex should draft the implementation plan.", "Write handoffs/30-implementation-plan.md"),
+    "draft_implementation_plan": ("Codex should review the implementation plan.", "Write handoffs/35-plan-review.md"),
+    "review_implementation_plan": ("Codex should write the execution prompt.", "Write handoffs/40-execution-prompt.md"),
+    "write_execution_prompt": ("Claude Code should start implementation.", "Write handoffs/50-claude-batch-r1.md"),
+    "claude_code_batch_execution": ("Codex should review the latest Claude batch.", "Write the next Codex review handoff"),
+    "codex_reviews_batch": ("Claude Code should apply the required changes.", "Write the next Claude revision handoff"),
+    "gate_major_phase": ("Claude Code should prepare the final revision handoff.", "Write handoffs/90-claude-final.md"),
     "final_revision": ("Human should run integration checks.", "Update handoffs/95-integration-checklist.md"),
-    "integration": ("Codex and human should capture the next cycle.", "Write handoffs/99-next-cycle.md"),
+    "integrate_merge_cleanup": ("Codex and human should capture the next cycle.", "Write handoffs/99-next-cycle.md"),
     "next_cycle": ("Task is complete.", "No further action required"),
+}
+
+LEGACY_STAGE_ALIASES = {
+    "intake": "clarify_objective",
+    "classification": "classify_task",
+    "scope_estimation": "classify_task",
+    "prd": "draft_prd",
+    "user_flow": "draft_user_flow",
+    "approval": "human_approval_gate",
+    "implementation_plan": "draft_implementation_plan",
+    "plan_review": "review_implementation_plan",
+    "execution_prompt": "write_execution_prompt",
+    "implementation_batch": "claude_code_batch_execution",
+    "review": "codex_reviews_batch",
+    "integration": "integrate_merge_cleanup",
 }
 
 
@@ -35,6 +50,7 @@ def get_next_step(task_dir: Path) -> dict[str, str]:
     state = json.loads(state_path.read_text())
     status = state.get("status", "unknown")
     stage = state.get("stage", "unknown")
+    stage = LEGACY_STAGE_ALIASES.get(stage, stage)
 
     if status == "done":
         return {"stage": stage, "message": "Task is complete.", "action": "No further action required"}
