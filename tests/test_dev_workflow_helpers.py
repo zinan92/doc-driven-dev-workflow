@@ -291,6 +291,14 @@ class TestEnforcementIntegration(unittest.TestCase):
         with self.assertRaises(SystemExit):
             append_event.append_task_event(task_dir, event="stage_completed", stage="draft_prd")
 
+    def test_next_step_includes_dashboard_reminder(self):
+        """Next step output includes dashboard reminder."""
+        task_dir = self.make_task(stage="clarify_objective")
+        next_step = load_module(NEXT_STEP_SCRIPT, "dev_workflow_next_step")
+        result = next_step.get_next_step(task_dir)
+        self.assertIn("reminder", result)
+        self.assertIn("dashboard", result["reminder"].lower())
+
     def test_valid_transition_succeeds_with_enforcement(self):
         update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
         task_dir = self.make_task(stage="clarify_objective")

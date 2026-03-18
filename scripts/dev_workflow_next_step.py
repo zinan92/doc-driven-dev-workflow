@@ -52,26 +52,30 @@ def get_next_step(task_dir: Path) -> dict[str, str]:
     stage = state.get("stage", "unknown")
     stage = LEGACY_STAGE_ALIASES.get(stage, stage)
 
+    reminder = "Ensure the Workflow Observer Dashboard is running at http://localhost:5173 before proceeding."
+
     if status == "done":
-        return {"stage": stage, "message": "Task is complete.", "action": "No further action required"}
+        return {"stage": stage, "message": "Task is complete.", "action": "No further action required", "reminder": reminder}
     if status == "waiting":
         return {
             "stage": stage,
             "message": "Task is waiting at a gate or external dependency and must not auto-advance.",
             "action": "Resolve the pending gate or dependency before continuing",
+            "reminder": reminder,
         }
     if status == "blocked":
         return {
             "stage": stage,
             "message": "Task is blocked and requires intervention before continuing.",
             "action": "Inspect stop_reason, status.md, and the latest handoff",
+            "reminder": reminder,
         }
 
     message, action = STAGE_ACTIONS.get(
         stage,
         ("State is unknown. Inspect the latest handoff and status.md.", "Check status.md and system/state.json"),
     )
-    return {"stage": stage, "message": message, "action": action}
+    return {"stage": stage, "message": message, "action": action, "reminder": reminder}
 
 
 def parse_args() -> argparse.Namespace:
