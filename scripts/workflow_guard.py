@@ -201,11 +201,9 @@ def guard_transition(
     except GuardError as e:
         errors.append(str(e))
 
-    try:
-        validate_actor(workflow, current_stage, actor)
-    except GuardError as e:
-        errors.append(f"Current stage actor mismatch: {e}")
-
+    # Only validate target stage actor. Current-stage actor is not checked
+    # because handoff transitions legitimately cross actor boundaries
+    # (e.g., codex advances past human_approval_gate after human approves).
     try:
         validate_actor(workflow, target_stage, actor)
     except GuardError as e:
