@@ -54,6 +54,18 @@ def get_next_step(task_dir: Path) -> dict[str, str]:
 
     if status == "done":
         return {"stage": stage, "message": "Task is complete.", "action": "No further action required"}
+    if status == "waiting":
+        return {
+            "stage": stage,
+            "message": "Task is waiting at a gate or external dependency and must not auto-advance.",
+            "action": "Resolve the pending gate or dependency before continuing",
+        }
+    if status == "blocked":
+        return {
+            "stage": stage,
+            "message": "Task is blocked and requires intervention before continuing.",
+            "action": "Inspect stop_reason, status.md, and the latest handoff",
+        }
 
     message, action = STAGE_ACTIONS.get(
         stage,

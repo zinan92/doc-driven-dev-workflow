@@ -181,12 +181,15 @@ Guidance:
 - estimation output belongs to scoping, not inside the PRD core body
 - user flow belongs to the PRD stage and must be approved before implementation planning
 - implementation planning starts only after approved PRD and approved user flow exist
+- if a recommended skill is available for the current stage, the agent should use it or explicitly explain why it is being skipped
 
 ## Stage Contracts
 
 ### Stage 0: Clarify Objective
 
 Owner: `Codex`
+
+Step type: `llm`
 
 Goal:
 
@@ -197,6 +200,13 @@ Required outputs:
 - clear objective
 - clear success condition
 - clear scope boundary
+
+Runtime rules:
+
+- this stage is a distinct interaction stage and must not be silently collapsed into later drafting
+- if objective, success condition, or scope boundary are still ambiguous, `Codex` must ask the human focused clarification questions and stop
+- do not proceed to task classification until the clarification answers are either explicit in the human input or captured through a clarification turn
+- stage 0 completes only after the intake artifact reflects clarified human intent rather than self-inferred assumptions
 
 ### Stage 1: Classify Task and Estimate Size
 
@@ -255,6 +265,14 @@ This step must produce both:
 - a human-readable user flow
 - a structured YAML version
 
+Structured YAML requirements:
+
+- every step must define `inputs`
+- every step must define `outputs`
+- every step must define `validation`
+- every step must define `failure`
+- every step must define `next`
+
 ### Stage 5: Human Approval Gate
 
 Owner: `human`
@@ -267,6 +285,12 @@ Approval is required for:
 - user flow
 
 Without approval, the workflow must not proceed to implementation planning.
+
+Artifact rules:
+
+- `handoffs/25-human-approval.md` may begin as a pending approval request drafted by `Codex`
+- the human decision must overwrite the file with the final approval or revision outcome before implementation planning proceeds
+- once the gate is pending, machine state should move to `status: waiting`
 
 ### Stage 6: Draft Implementation Plan
 
@@ -636,6 +660,8 @@ steps:
     validation:
       type: schema
       schema: normalized_request_v1
+    failure:
+      on_validation_error: stop_and_revise
     next:
       - classify_task
 ```
@@ -666,11 +692,11 @@ Example:
 ```yaml
 ---
 task_id: TASK-2026-03-15-example
-author: human
-role: approver
+author: codex
+role: planner
 gate: prd_user_flow
-status: approved
-next_actor: codex
+status: pending
+next_actor: human
 ---
 ```
 
@@ -679,6 +705,8 @@ Suggested body sections:
 - `Decision`
 - `Notes`
 - `Constraints`
+
+After the human decides, update the same file to reflect the final approval state and human ownership.
 
 Required human gates:
 
@@ -698,6 +726,9 @@ Any terminal agent using this workflow must obey these rules:
 
 1. Read `Development Workflow.md` before acting.
 2. Read all prerequisite task documents before acting.
+3. Advance at most one canonical stage per workflow cycle.
+4. When entering a stage, write state first, then write artifacts, then log completion or waiting.
+5. At human gates, stop instead of speculating past approval.
 3. Do not guess missing context.
 4. If required inputs are missing, stop and record the blocker.
 5. Prefer scripts over LLMs.

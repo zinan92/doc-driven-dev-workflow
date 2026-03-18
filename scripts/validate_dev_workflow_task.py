@@ -74,6 +74,16 @@ def validate_required_sections(path: Path, sections: list[str]) -> list[str]:
     return errors
 
 
+def validate_user_flow_yaml(path: Path) -> list[str]:
+    text = path.read_text()
+    errors: list[str] = []
+    if "steps:" not in text:
+        errors.append("Missing steps block in handoffs/21-user-flow.yaml")
+    if "failure:" not in text:
+        errors.append("Missing failure contract in handoffs/21-user-flow.yaml")
+    return errors
+
+
 def validate_task(task_dir: Path) -> dict[str, object]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -102,6 +112,10 @@ def validate_task(task_dir: Path) -> dict[str, object]:
         path = task_dir / rel_path
         if path.exists():
             errors.extend(validate_required_sections(path, sections))
+
+    user_flow_yaml_path = task_dir / "handoffs" / "21-user-flow.yaml"
+    if user_flow_yaml_path.exists():
+        errors.extend(validate_user_flow_yaml(user_flow_yaml_path))
 
     state_path = task_dir / "system" / "state.json"
     if state_path.exists():

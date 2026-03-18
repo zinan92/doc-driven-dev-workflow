@@ -98,6 +98,20 @@ npm run dev
 
 默认会扫描 `examples/` 和 `tasks/` 下的本地 workflow snapshots，把 doc-driven task 可视化成三栏式 read-only observer cockpit。左侧是 task rail，中间是 workflow canvas，右侧是 inspector。
 
+如果 task 在其他 repo 里生成，也可以显式加入外部 task roots：
+
+```bash
+cd frontend
+WORKFLOW_SNAPSHOT_ROOTS="/absolute/path/to/external/tasks" npm run build:data
+npm run dev
+```
+
+也支持多个 roots，按系统路径分隔符拼接：
+
+```bash
+WORKFLOW_SNAPSHOT_ROOTS="/path/one/tasks:/path/two/tasks" npm run build:data
+```
+
 ## 功能一览
 
 | 功能 | 说明 | 状态 |

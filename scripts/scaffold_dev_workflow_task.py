@@ -50,6 +50,15 @@ def replace_placeholders(root: Path, replacements: dict[str, str]) -> None:
         path.write_text(text)
 
 
+def build_observer_commands(*, output_root: Path) -> list[str]:
+    frontend_dir = ROOT / "frontend"
+    return [
+        f"cd {frontend_dir}",
+        f'WORKFLOW_SNAPSHOT_ROOTS="{output_root}" npm run build:data',
+        "npm run dev",
+    ]
+
+
 def scaffold_task(
     *,
     task_id: str | None,
@@ -142,6 +151,9 @@ def main() -> int:
         force=args.force,
     )
     print(task_dir)
+    print("\nObserver commands:")
+    for command in build_observer_commands(output_root=Path(args.output_root)):
+        print(command)
     return 0
 
 

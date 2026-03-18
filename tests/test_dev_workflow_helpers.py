@@ -87,6 +87,16 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
         self.assertEqual(result["message"], "Task is complete.")
 
+    def test_next_step_stops_when_task_is_waiting(self):
+        next_step = load_module(NEXT_STEP_SCRIPT, "dev_workflow_next_step")
+        tmpdir, task_dir = self.make_task(stage="human_approval_gate", status="waiting")
+        self.addCleanup(tmpdir.cleanup)
+
+        result = next_step.get_next_step(task_dir)
+
+        self.assertEqual(result["stage"], "human_approval_gate")
+        self.assertIn("waiting", result["message"])
+
     def test_validate_task_reports_missing_frontmatter(self):
         validate = load_module(VALIDATE_SCRIPT, "validate_dev_workflow_task")
         tmpdir, task_dir = self.make_task()
@@ -130,6 +140,27 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
         self.assertEqual(result["ok"], False)
         self.assertTrue(any("Required Changes" in error for error in result["errors"]))
+
+    def test_validate_task_reports_missing_user_flow_failure_contract(self):
+        validate = load_module(VALIDATE_SCRIPT, "validate_dev_workflow_task")
+        tmpdir, task_dir = self.make_task()
+        self.addCleanup(tmpdir.cleanup)
+        user_flow_yaml_path = task_dir / "handoffs" / "21-user-flow.yaml"
+        user_flow_yaml_path.write_text(
+            'task_id: "TASK-2026-03-15-helper-demo"\n'
+            "flow_name: example-flow\n"
+            "steps:\n"
+            "  - id: entry\n"
+            "    validation:\n"
+            "      type: schema\n"
+            "    next:\n"
+            "      - classify_task\n"
+        )
+
+        result = validate.validate_task(task_dir)
+
+        self.assertEqual(result["ok"], False)
+        self.assertTrue(any("failure contract" in error for error in result["errors"]))
 
     def test_update_task_state_writes_observer_ready_fields(self):
         update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
@@ -178,6 +209,14 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
         lines = (task_dir / "system" / "run-log.jsonl").read_text().strip().splitlines()
         self.assertTrue(any(json.loads(line)["event"] == "artifact_written" for line in lines))
+
+    def test_append_task_event_rejects_unknown_event_names(self):
+        append_event = load_module(APPEND_EVENT_SCRIPT, "append_task_event")
+        tmpdir, task_dir = self.make_task(stage="draft_prd", status="active")
+        self.addCleanup(tmpdir.cleanup)
+
+        with self.assertRaises(ValueError):
+            append_event.append_task_event(task_dir, event="human_gate_pending")
 
 
 if __name__ == "__main__":

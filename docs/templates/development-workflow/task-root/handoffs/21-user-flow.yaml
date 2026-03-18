@@ -17,6 +17,8 @@ steps:
     validation:
       type: schema
       schema: "{{ENTRY_SCHEMA}}"
+    failure:
+      on_validation_error: "{{ENTRY_FAILURE}}"
     next:
       - "{{NEXT_STEP_ID}}"
   - id: review_gate
@@ -34,6 +36,8 @@ steps:
         - approve
         - revise
         - reject
+    failure:
+      on_validation_error: request_human_retry
     next:
       approve: "{{APPROVE_NEXT}}"
       revise: "{{REVISE_NEXT}}"

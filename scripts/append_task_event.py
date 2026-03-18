@@ -27,6 +27,17 @@ PHASE_BY_STAGE = {
     "next_cycle": "integration_cleanup",
 }
 
+ALLOWED_EVENTS = {
+    "task_created",
+    "stage_entered",
+    "artifact_written",
+    "stage_completed",
+    "stage_blocked",
+    "stage_waiting",
+    "review_decision",
+    "task_completed",
+}
+
 
 def iso_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
@@ -46,6 +57,9 @@ def append_task_event(
 ) -> dict[str, object]:
     state_path = task_dir / "system" / "state.json"
     run_log_path = task_dir / "system" / "run-log.jsonl"
+
+    if event not in ALLOWED_EVENTS:
+        raise ValueError(f"Unsupported workflow event: {event}")
 
     state = json.loads(state_path.read_text())
     resolved_stage = stage or state.get("stage", "clarify_objective")

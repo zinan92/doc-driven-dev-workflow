@@ -1,23 +1,23 @@
 ---
 task_id: "{{TASK_ID}}"
-author: human
-role: approver
+author: codex
+role: planner
 gate: prd_user_flow
-status: approved
-next_actor: codex
+status: pending
+next_actor: human
 ---
 
-# Human Approval
+# Human Approval Request
 
 ## Decision
 
-`approved`
+`pending`
 
 ## Notes
 
-{{APPROVAL_NOTES}}
+Review the PRD and user flow artifacts, then replace this pending request with the human decision.
 
 ## Constraints
 
-- {{CONSTRAINT_1}}
-- {{CONSTRAINT_2}}
+- Do not proceed past this gate without explicit human approval.
+- Update frontmatter and decision content when the human responds.

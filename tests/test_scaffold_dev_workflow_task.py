@@ -119,6 +119,15 @@ class ScaffoldTaskTests(unittest.TestCase):
             self.assertEqual(task_dir.name, "TASK-2026-03-15-generated-task")
             self.assertTrue((task_dir / "handoffs" / "10-prd.md").exists())
 
+    def test_build_observer_commands_include_external_output_root(self):
+        module = load_module()
+
+        commands = module.build_observer_commands(output_root=Path("/tmp/external/tasks"))
+
+        self.assertIn("frontend", commands[0])
+        self.assertIn('WORKFLOW_SNAPSHOT_ROOTS="/tmp/external/tasks" npm run build:data', commands[1])
+        self.assertEqual(commands[2], "npm run dev")
+
 
 if __name__ == "__main__":
     unittest.main()

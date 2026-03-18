@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { join, dirname, basename, resolve, delimiter } from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 
@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 
 const REPO_ROOT = join(__dirname, "../..");
 const OUTPUT = join(__dirname, "../src/data/workflow-snapshots.json");
-const DISCOVERY_ROOTS = [join(REPO_ROOT, "examples"), join(REPO_ROOT, "tasks")];
+const DEFAULT_DISCOVERY_ROOTS = [join(REPO_ROOT, "examples"), join(REPO_ROOT, "tasks")];
 const PHASE_STAGE_MAP: Record<string, string> = {
   clarify_objective: "intention_framing",
   classify_task: "intention_framing",
@@ -52,9 +52,28 @@ function isTaskDir(path: string): boolean {
   return existsSync(join(path, "status.md")) && existsSync(join(path, "handoffs")) && existsSync(join(path, "system"));
 }
 
-function discoverTaskDirs(): string[] {
-  return DISCOVERY_ROOTS.flatMap((root) => {
+function parseExtraRoots(): string[] {
+  const cliRoots: string[] = [];
+  for (let i = 2; i < process.argv.length; i++) {
+    if (process.argv[i] === "--root" && process.argv[i + 1]) {
+      cliRoots.push(resolve(process.argv[i + 1]));
+      i += 1;
+    }
+  }
+
+  const envRoots = (process.env.WORKFLOW_SNAPSHOT_ROOTS ?? "")
+    .split(delimiter)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => resolve(entry));
+
+  return [...new Set([...cliRoots, ...envRoots])];
+}
+
+function discoverTaskDirs(roots: readonly string[]): string[] {
+  return roots.flatMap((root) => {
     if (!existsSync(root)) return [];
+    if (isTaskDir(root)) return [root];
     return readdirSync(root)
       .map((entry) => join(root, entry))
       .filter(isTaskDir);
@@ -86,7 +105,8 @@ function buildSnapshot(taskDir: string) {
   };
 }
 
-const snapshots = discoverTaskDirs().map(buildSnapshot);
+const discoveryRoots = [...DEFAULT_DISCOVERY_ROOTS, ...parseExtraRoots()];
+const snapshots = discoverTaskDirs(discoveryRoots).map(buildSnapshot);
 const payload = {
   generatedAt: new Date().toISOString(),
   snapshots,
@@ -94,3 +114,7 @@ const payload = {
 
 writeFileSync(OUTPUT, JSON.stringify(payload, null, 2));
 console.log(`Wrote ${OUTPUT}`);
+console.log(`Discovered ${snapshots.length} workflow snapshot(s) from:`);
+for (const root of discoveryRoots) {
+  console.log(`- ${root}`);
+}

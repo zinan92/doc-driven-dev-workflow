@@ -36,10 +36,11 @@ Your job is to do exactly one workflow advancement cycle at a time:
 2. Read the relevant workflow definition:
    - use `docs/development-workflow.md` for the canonical lifecycle
    - use `handoffs/32-execution-workflow.yaml` for execution-stage step ordering when available
-3. Determine the single next valid step.
-4. If the next step belongs to `human`, stop and report that a human gate is pending.
-5. If the next step belongs to the current agent role, execute it.
-6. After producing or updating an artifact, immediately persist workflow state through scripts instead of hand-editing machine state files.
+3. Determine the single next valid canonical stage.
+4. Execute at most one canonical stage in this cycle. Do not batch multiple downstream stages into one run.
+5. If the next step belongs to `human`, stop and report that a human gate is pending.
+6. If the next step belongs to the current agent role, execute it.
+7. After producing or updating an artifact, immediately persist workflow state through scripts instead of hand-editing machine state files.
 
 Use these write interfaces:
 
@@ -51,10 +52,10 @@ Use these write interfaces:
 
 State-writing rules:
 
-- On entering a stage, call `update_task_state.py` first.
+- On entering a stage, call `update_task_state.py` first and append `stage_entered`.
 - When a key handoff is written, call `append_task_event.py --event artifact_written`.
 - When a stage is completed, call `append_task_event.py --event stage_completed`.
-- When waiting for human approval, set status to `waiting` and set an explicit `stop_reason`.
+- When waiting for human approval, set status to `waiting`, set an explicit `stop_reason`, and append `stage_waiting`.
 - When blocked, set status to `blocked` and set an explicit `stop_reason`.
 - When the task is complete, set stage to `next_cycle`, status to `done`, and append `task_completed`.
 
@@ -68,6 +69,12 @@ Behavior rules:
 - Prefer append-only behavior for documents.
 - Use scripts for deterministic actions and validation whenever possible.
 - Use LLM judgment only for drafting, reviewing, planning, or other interpretive steps.
+- Before each stage, check whether the workflow recommends a skill for that stage. If a recommended skill is available, use it or explicitly justify skipping it.
+- Stage 0 is special: if objective, success condition, or scope boundary are still ambiguous, ask the human clarification questions and stop. Do not classify the task in the same cycle.
+- Do not self-answer open product questions that materially affect scope, initial cohort choice, or source-of-truth contracts.
+- `handoffs/25-human-approval.md` may be drafted by Codex as a pending approval request, but the final approval decision must come from the human.
+- After scaffolding a task outside this repository, tell the human how to observe it in the dashboard using:
+  `WORKFLOW_SNAPSHOT_ROOTS="<EXTERNAL_TASK_ROOT>" npm run build:data`
 
 When you finish the cycle, report:
 - what stage you read
@@ -95,6 +102,14 @@ Use one runner cycle at a time. After each cycle, either:
 - let the same agent continue with the next cycle
 - switch to another agent role
 - stop at a human approval gate
+
+If the task lives in another repo, rebuild dashboard snapshots from this repo with:
+
+```text
+cd /Users/wendy/work/dev-co/doc-driven-dev-workflow/frontend
+WORKFLOW_SNAPSHOT_ROOTS="/absolute/path/to/external/tasks" npm run build:data
+npm run dev
+```
 
 ---
 
