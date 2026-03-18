@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+from workflow_guard import load_canonical_workflow, guard_transition
 
 
 PHASE_BY_STAGE = {
@@ -32,6 +35,18 @@ def iso_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def _read_task_size(task_dir: Path) -> str | None:
+    """Read task_size from 05-task-classification.yaml if it exists."""
+    classification = task_dir / "handoffs" / "05-task-classification.yaml"
+    if not classification.exists():
+        return None
+    content = classification.read_text()
+    for line in content.splitlines():
+        if line.strip().startswith("task_size:"):
+            return line.partition(":")[2].strip().strip('"').strip("'")
+    return None
+
+
 def update_task_state(
     task_dir: Path,
     *,
@@ -42,9 +57,32 @@ def update_task_state(
     last_artifact: str | None = None,
     stop_reason: str | None = None,
     updated_at: str | None = None,
+    enforce: bool = True,
 ) -> dict[str, object]:
     state_path = task_dir / "system" / "state.json"
     state = json.loads(state_path.read_text())
+
+    # --- ENFORCEMENT LAYER ---
+    if enforce and stage is not None and stage != state.get("stage"):
+        current_stage = state.get("stage", "")
+        actor = current_actor or state.get("current_actor", "")
+        task_size = _read_task_size(task_dir)
+        r = round if round is not None else state.get("round", 0)
+
+        workflow = load_canonical_workflow()
+        errors = guard_transition(
+            workflow, task_dir,
+            current_stage=current_stage,
+            target_stage=stage,
+            actor=actor,
+            task_size=task_size,
+            current_round=r,
+        )
+        if errors:
+            msg = "BLOCKED by workflow guard:\n" + "\n".join(f"  - {e}" for e in errors)
+            print(msg, file=sys.stderr)
+            raise SystemExit(1)
+    # --- END ENFORCEMENT ---
 
     if status is not None:
         state["status"] = status
@@ -77,6 +115,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--artifact", dest="last_artifact", help="Latest artifact path")
     parser.add_argument("--stop-reason", dest="stop_reason", help="Nullable stop reason")
     parser.add_argument("--updated-at", dest="updated_at", help="Override updated_at timestamp")
+    parser.add_argument("--no-enforce", action="store_true", help="Skip workflow guards (emergency override only)")
     return parser.parse_args()
 
 
@@ -91,6 +130,7 @@ def main() -> int:
         last_artifact=args.last_artifact,
         stop_reason=args.stop_reason,
         updated_at=args.updated_at,
+        enforce=not args.no_enforce,
     )
     print(json.dumps(state, indent=2))
     return 0

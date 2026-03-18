@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -176,6 +177,7 @@ class DevWorkflowHelperTests(unittest.TestCase):
             last_artifact="handoffs/20-user-flow.md",
             stop_reason="awaiting_approval",
             updated_at="2026-03-18T13:00:00Z",
+            enforce=False,
         )
 
         self.assertEqual(state["stage"], "draft_user_flow")
@@ -217,6 +219,81 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             append_event.append_task_event(task_dir, event="human_gate_pending")
+
+
+class TestEnforcementIntegration(unittest.TestCase):
+    """Integration tests for workflow enforcement in update_task_state."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
+
+    def make_task(self, stage="clarify_objective", actor="codex"):
+        task_dir = Path(self.tmp) / "TASK-enforce-test"
+        if task_dir.exists():
+            shutil.rmtree(task_dir)
+        task_dir.mkdir(parents=True)
+        (task_dir / "handoffs").mkdir()
+        (task_dir / "system").mkdir()
+        state = {
+            "task_id": "TASK-enforce-test",
+            "status": "active",
+            "current_phase": "intention_framing",
+            "stage": stage,
+            "round": 0,
+            "current_actor": actor,
+            "last_artifact": None,
+            "updated_at": None,
+            "stop_reason": None,
+        }
+        (task_dir / "system" / "state.json").write_text(json.dumps(state, indent=2) + "\n")
+        (task_dir / "system" / "run-log.jsonl").write_text("")
+        (task_dir / "status.md").write_text(
+            "# Status\nCurrent stage: x\nCurrent owner: x\nCurrent round: 0\n"
+            "Latest conclusion: x\nBlockers: x\nNext step: x\n"
+        )
+        (task_dir / "decision-log.md").write_text("# Decision Log\n")
+        return task_dir
+
+    def test_rejects_invalid_transition(self):
+        update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
+        task_dir = self.make_task(stage="clarify_objective")
+        with self.assertRaises(SystemExit):
+            update_state.update_task_state(task_dir, stage="draft_prd", current_actor="codex")
+
+    def test_rejects_wrong_actor(self):
+        update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
+        task_dir = self.make_task(stage="clarify_objective")
+        (task_dir / "handoffs" / "00-intake.md").write_text(
+            "---\ntask_id: TEST\n---\n## Objective\nReal\n"
+        )
+        with self.assertRaises(SystemExit):
+            update_state.update_task_state(task_dir, stage="classify_task", current_actor="claude_code")
+
+    def test_rejects_unapproved_human_gate(self):
+        update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
+        task_dir = self.make_task(stage="human_approval_gate", actor="human")
+        for name, content in [
+            ("10-prd.md", "---\ntask_id: T\n---\n## Purpose\nX\n## Scope\nX"),
+            ("20-user-flow.md", "---\ntask_id: T\n---\n## Entry Point\nX\n## Steps\nX\n## Completion\nX"),
+            ("25-human-approval.md", "---\nauthor: codex\nstatus: pending\n---\n## Decision\nPending"),
+        ]:
+            (task_dir / "handoffs" / name).write_text(content)
+        with self.assertRaises(SystemExit):
+            update_state.update_task_state(task_dir, stage="draft_implementation_plan", current_actor="codex")
+
+    def test_valid_transition_succeeds_with_enforcement(self):
+        update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
+        task_dir = self.make_task(stage="clarify_objective")
+        (task_dir / "handoffs" / "00-intake.md").write_text(
+            "---\ntask_id: TEST\n---\n## Objective\nReal\n"
+        )
+        state = update_state.update_task_state(task_dir, stage="classify_task", current_actor="codex")
+        self.assertEqual(state["stage"], "classify_task")
+        self.assertEqual(state["current_actor"], "codex")
+        self.assertEqual(state["current_phase"], "intention_framing")
 
 
 if __name__ == "__main__":
