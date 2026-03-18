@@ -284,6 +284,13 @@ class TestEnforcementIntegration(unittest.TestCase):
         with self.assertRaises(SystemExit):
             update_state.update_task_state(task_dir, stage="draft_implementation_plan", current_actor="codex")
 
+    def test_event_rejects_false_stage_completion(self):
+        """Cannot log stage_completed for a stage that is not current."""
+        append_event = load_module(APPEND_EVENT_SCRIPT, "append_task_event")
+        task_dir = self.make_task(stage="clarify_objective")
+        with self.assertRaises(SystemExit):
+            append_event.append_task_event(task_dir, event="stage_completed", stage="draft_prd")
+
     def test_valid_transition_succeeds_with_enforcement(self):
         update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
         task_dir = self.make_task(stage="clarify_objective")

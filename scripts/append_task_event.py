@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from workflow_guard import validate_event_consistency, GuardError
 
 
 PHASE_BY_STAGE = {
@@ -76,6 +80,14 @@ def append_task_event(
         "status": status or state.get("status", "active"),
         "round": round if round is not None else state.get("round", 0),
     }
+
+    # --- EVENT CONSISTENCY GUARD ---
+    try:
+        validate_event_consistency(event, resolved_stage, state)
+    except GuardError as e:
+        print(f"BLOCKED: {e}", file=sys.stderr)
+        raise SystemExit(1)
+    # --- END GUARD ---
 
     with run_log_path.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(payload) + "\n")
