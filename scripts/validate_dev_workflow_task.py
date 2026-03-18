@@ -5,7 +5,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from workflow_guard import detect_template
 
 
 REQUIRED_FILES = [
@@ -127,6 +131,15 @@ def validate_task(task_dir: Path) -> dict[str, object]:
             for key in ["task_id", "status", "stage", "current_actor"]:
                 if key not in state:
                     errors.append(f"Missing key in system/state.json: {key}")
+
+    # Template detection
+    handoffs_dir = task_dir / "handoffs"
+    if handoffs_dir.exists():
+        for handoff in sorted(handoffs_dir.iterdir()):
+            if handoff.suffix in (".md", ".yaml") and handoff.is_file():
+                content = handoff.read_text()
+                if detect_template(content):
+                    warnings.append(f"Template placeholders detected in {handoff.name}")
 
     return {"ok": not errors, "errors": errors, "warnings": warnings}
 

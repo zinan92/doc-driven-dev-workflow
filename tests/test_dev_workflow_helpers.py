@@ -299,6 +299,24 @@ class TestEnforcementIntegration(unittest.TestCase):
         self.assertIn("reminder", result)
         self.assertIn("dashboard", result["reminder"].lower())
 
+    def test_validate_warns_on_template_content(self):
+        """Validation should warn when handoff files contain template placeholders."""
+        validate = load_module(VALIDATE_SCRIPT, "validate_dev_workflow_task")
+        task_dir = self.make_task(stage="clarify_objective")
+        (task_dir / "handoffs" / "00-intake.md").write_text(
+            "---\ntask_id: {{TASK_ID}}\n---\n## Objective\n{{PURPOSE}}\n"
+        )
+        # Need to also create required files for validation to not error
+        for name in ["10-prd.md", "20-user-flow.md", "21-user-flow.yaml",
+                      "30-implementation-plan.md", "40-execution-prompt.md"]:
+            (task_dir / "handoffs" / name).write_text("placeholder content")
+        (task_dir / "system" / "state.json").write_text(
+            json.dumps({"task_id": "T", "status": "active", "stage": "clarify_objective",
+                         "round": 0, "current_actor": "codex", "last_artifact": None, "stop_reason": None})
+        )
+        result = validate.validate_task(task_dir)
+        self.assertTrue(any("template" in w.lower() for w in result.get("warnings", [])))
+
     def test_valid_transition_succeeds_with_enforcement(self):
         update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
         task_dir = self.make_task(stage="clarify_objective")
