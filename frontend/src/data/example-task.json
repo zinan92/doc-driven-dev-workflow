@@ -1,0 +1,255 @@
+{
+  "state": {
+    "task_id": "TASK-2026-03-15-example-greeter",
+    "status": "done",
+    "stage": "next_cycle",
+    "round": 2,
+    "current_actor": "human",
+    "last_artifact": "handoffs/99-next-cycle.md",
+    "stop_reason": "final_revision_completed"
+  },
+  "statusMd": "# TASK-2026-03-15-example-greeter Status\n\n- Current stage: `next_cycle`\n- Current owner: `human`\n- Current round or batch: `2`\n- Latest conclusion: `Final revision completed, integration checklist closed, and next-cycle notes captured.`\n- Blockers: `None`\n- Next step: `Use handoffs/99-next-cycle.md to decide the next task.`\n",
+  "handoffs": [
+    {
+      "filename": "00-intake.md",
+      "content": "# Intake\n\n## Objective\n\nCreate a tiny CLI greeter that prints a personalized greeting for a provided name.\n\n## Requested Outcome\n\nDemonstrate the full doc-driven workflow on a minimal feature.\n\n## Constraints\n\n- Repo path: `/path/to/example-repo`\n- Deadline or urgency: `demo`\n- Known constraints: `Keep the implementation intentionally small and fully testable`\n\n## Existing Inputs\n\n- Existing docs: `None`\n- Relevant repo or environment notes: `Assume a small Python CLI project`\n\n## Notes\n\nThis task exists to show the workflow shape, not to represent a real production feature.",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "human",
+        "role": "requester",
+        "stage": "intake",
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "05-task-classification.yaml",
+      "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nauthor: codex\nrole: planner\nstage: classification\nstatus: completed\nnext_actor: codex\ntask_type: feature\ntask_size: small\nconfidence: high\nrationale:\n  - \"The requested behavior is small and self-contained.\"\n  - \"A single command plus tests is enough for the first release.\"\nsuccess_condition: \"A CLI command prints a greeting for a provided name and tests pass.\"\nscope_boundary: \"No config files, no persistence, no rich CLI parsing beyond one optional name input.\"",
+      "frontmatter": {}
+    },
+    {
+      "filename": "08-scope-estimate.md",
+      "content": "# Scope Estimate\n\n## Estimated Size\n\n`small`\n\n## Estimate Summary\n\nThis task is small enough for the simplified two-review loop because it has one direct user path and low architectural risk.\n\n## Main Drivers\n\n- Tiny surface area\n- Clear success condition\n- Easy verification with unit tests\n\n## Workflow Impact\n\n- PRD depth: `lean`\n- Planning depth: `lean`\n- Delivery mode: `simplified_review_loop`",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "planner",
+        "stage": "scope_estimation",
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "10-prd.md",
+      "content": "# PRD: Example Greeter CLI\n\n## Purpose\n\nProvide a minimal example feature that demonstrates the workflow from PRD through final revision.\n\n## Problem\n\nThe repo needs a simple, low-risk example task that shows what a finished document-driven task looks like.\n\n## Goals\n\n- Implement a command that prints a greeting for a user-supplied name.\n- Keep the feature small enough to demonstrate the workflow clearly.\n\n## Non-Goals\n\n- Full CLI framework integration\n- Persistent configuration\n\n## User Value\n\nA user can verify the workflow with a trivial but complete feature.\n\n## Scope\n\nOne command, one helper function, and unit tests.\n\n## Expected Behavior\n\n- Running the command with a name prints `Hello, <name>!`\n- Running without a name prints a default greeting\n\n## Contracts\n\n- Greeting output is deterministic\n- Tests cover both named and default usage\n\n## Acceptance Criteria\n\n- Greeting function exists\n- CLI path exists\n- Unit tests pass\n\n## Constraints\n\n- Python only\n- Keep the file footprint small\n\n## Terminology\n\n- greeting command: the user-facing CLI entry point\n- greeter function: the underlying formatter",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "planner",
+        "stage": "prd",
+        "status": "draft",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "15-prd-reality-review.md",
+      "content": "# PRD Reality Review\n\n## Baseline Checked\n\n- Repo path: `/path/to/example-repo`\n- Environment or service checked: `local python project layout`\n\n## Findings\n\n- The repo already uses Python entry scripts\n- Unit tests are the right verification layer for this example\n\n## Resolved Contradictions\n\n- No conflict between the PRD and the baseline\n- No missing dependency assumptions remain\n\n## Required PRD Corrections\n\n- Clarify that default greeting behavior is required\n- Clarify that tests should cover CLI and helper behavior\n\n## Approved Baseline Assumptions\n\n- Python is available\n- Unit tests can be run locally",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "reviewer",
+        "stage": "prd_reality_review",
+        "inputs": [
+          "handoffs/10-prd.md"
+        ],
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "20-user-flow.md",
+      "content": "# User Flow: Example Greeter CLI\n\n## User\n\nA terminal user validating the workflow with a minimal feature.\n\n## Entry Point\n\nThe user runs the greeter command from the shell.\n\n## Flow Summary\n\nThe user executes the command, optionally provides a name, and receives a greeting immediately.\n\n## Steps\n\n1. User runs the greeter command\n2. User optionally provides a name argument\n3. System prints the greeting\n\n## System Responses\n\n- If a name is provided, return a personalized greeting\n- If no name is provided, return a default greeting\n\n## Completion Condition\n\nThe user sees a correct greeting and the command exits successfully.\n\n## Open Questions\n\n- None",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "planner",
+        "stage": "user_flow",
+        "status": "draft",
+        "next_actor": "human"
+      }
+    },
+    {
+      "filename": "21-user-flow.yaml",
+      "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nflow_name: \"example-greeter\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: run_command\n    name: \"Run greeter command\"\n    actor: user\n    step_type: script\n    goal: \"Start the greeter\"\n    inputs:\n      - \"command invocation\"\n    outputs:\n      - \"parsed name or default path\"\n    validation:\n      type: schema\n      schema: \"cli_input_v1\"\n    next:\n      - print_greeting\n  - id: review_gate\n    name: \"Approve product flow\"\n    actor: human\n    step_type: human_gate\n    goal: \"Confirm this user flow before planning\"\n    inputs:\n      - \"handoffs/20-user-flow.md\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    next:\n      approve: \"implementation_plan\"\n      revise: \"user_flow\"\n      reject: end",
+      "frontmatter": {}
+    },
+    {
+      "filename": "25-human-approval.md",
+      "content": "# Human Approval\n\n## Decision\n\n`approved`\n\n## Notes\n\nThe PRD and user flow are aligned with the goal of demonstrating the workflow on a minimal task.\n\n## Constraints\n\n- Keep the implementation intentionally small\n- Do not add extra CLI complexity",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "human",
+        "role": "approver",
+        "gate": "prd_user_flow",
+        "status": "approved",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "30-implementation-plan.md",
+      "content": "# Example Greeter CLI Implementation Plan\n\n> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.\n\n**Goal:** Add a minimal greeting command and tests that demonstrate the workflow on a small feature.\n\n**Architecture:** Keep the implementation small: one greeting helper, one command path, and tests for both named and default greetings. Do not introduce extra layers or dependencies.\n\n**Tech Stack:** Python, unittest\n\n---\n\n### Task 1: Add greeting behavior\n\n**Files:**\n- Modify: `src/greeter.py`\n- Test: `tests/test_greeter.py`\n\n**Step 1: Write the failing test**\n\nAdd tests for named and default greeting behavior.\n\n**Step 2: Run the test to verify it fails**\n\nRun: `python3 -m unittest tests.test_greeter -v`\n\nExpected: failure because the greeting helper does not yet exist.\n\n**Step 3: Write the minimal implementation**\n\nImplement a greeting helper that formats the correct string.\n\n**Step 4: Run the test to verify it passes**\n\nRun: `python3 -m unittest tests.test_greeter -v`\n\nExpected: pass.",
+      "frontmatter": {}
+    },
+    {
+      "filename": "32-execution-workflow.yaml",
+      "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nworkflow_name: \"example-greeter-delivery\"\nstatus: draft\nsteps:\n  - id: implementation_batch_1\n    name: \"Implement greeting helper and command\"\n    actor: claude_code\n    step_type: llm\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - codex_review_1\n  - id: codex_review_1\n    name: \"Review first batch\"\n    actor: codex\n    step_type: llm\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - implementation_batch_2",
+      "frontmatter": {}
+    },
+    {
+      "filename": "35-plan-review.md",
+      "content": "# Implementation Plan Review\n\n## Findings\n\n- The plan is small enough for the simplified flow\n- Tests are the right verification mechanism\n\n## Clarified Execution Order\n\n- Write tests before implementation\n- Keep the CLI layer thin\n\n## Clarified Verification Commands\n\n- `python3 -m unittest tests.test_greeter -v`\n\n## Dependency Boundaries\n\n- Do not add third-party CLI frameworks\n- Keep greeting formatting isolated\n\n## Plan Decision\n\n`approved`",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "reviewer",
+        "stage": "plan_review",
+        "inputs": [
+          "handoffs/30-implementation-plan.md"
+        ],
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "40-execution-prompt.md",
+      "content": "# Execution Prompt for Claude Code\n\n## Repository\n\n- Repo path: `/path/to/example-repo`\n- Working branch or worktree: `task/example-greeter`\n\n## Source of Truth\n\n- PRD: `handoffs/10-prd.md`\n- User flow: `handoffs/20-user-flow.md`\n- User flow YAML: `handoffs/21-user-flow.yaml`\n- Approved plan: `handoffs/30-implementation-plan.md`\n- Reviewed plan: `handoffs/35-plan-review.md`\n\n## Execution Rules\n\n- Follow the implementation plan in order\n- Do not expand scope\n- Stop if required inputs are missing\n- Write a batch report after each meaningful step\n\n## Stop Conditions\n\n- Missing source-of-truth document\n- Destructive or risky action required\n- Validation failure that cannot be resolved\n\n## Required Report Format\n\n- Tasks Completed\n- Files Changed\n- Tests Run\n- Result\n- Next Proposed Batch\n\n## Forbidden Behavior\n\n- Do not rewrite the PRD\n- Do not rewrite the approved user flow\n- Do not silently change architecture",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "planner",
+        "stage": "execution_prompt",
+        "status": "completed",
+        "next_actor": "claude_code"
+      }
+    },
+    {
+      "filename": "50-claude-batch-r1.md",
+      "content": "# Claude Code Batch Report Round 1\n\n## Tasks Completed\n\n- Added greeting helper\n- Added first-pass CLI command\n\n## Files Changed\n\n- `src/greeter.py`\n- `src/cli.py`\n- `tests/test_greeter.py`\n\n## Tests Run\n\n- `python3 -m unittest tests.test_greeter -v`\n\n## Result\n\nInitial feature works, but default greeting coverage and CLI argument handling need review.\n\n## Next Proposed Batch\n\n- Tighten default behavior\n- Improve CLI test coverage\n\n## Blockers\n\n- None",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "claude_code",
+        "role": "implementer",
+        "stage": "implementation_batch",
+        "round": 1,
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "60-codex-review-r1.md",
+      "content": "# Codex Review Round 1\n\n## Summary\n\nThe feature is close, but the default greeting path and CLI-facing tests are underspecified.\n\n## Findings\n\n- Default greeting behavior is not clearly verified\n- CLI behavior should be covered directly, not only through the helper\n\n## Required Changes\n\n- Add explicit test coverage for the default greeting path\n- Add or strengthen a CLI-focused test\n\n## Optional Improvements\n\n- Keep the output format consistent in all paths\n\n## Gate Decision\n\n`fix_before_proceeding`",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "reviewer",
+        "stage": "review",
+        "round": 1,
+        "inputs": [
+          "handoffs/50-claude-batch-r1.md"
+        ],
+        "status": "completed",
+        "next_actor": "claude_code"
+      }
+    },
+    {
+      "filename": "70-claude-batch-r2.md",
+      "content": "# Claude Code Revision Report Round 2\n\n## Changes Made\n\n- Added explicit default greeting test\n- Tightened CLI-facing verification\n\n## Files Changed\n\n- `tests/test_greeter.py`\n- `src/cli.py`\n\n## Tests Run\n\n- `python3 -m unittest tests.test_greeter -v`\n\n## Remaining Issues\n\n- None\n\n## Next Proposed Batch\n\n- Final review",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "claude_code",
+        "role": "implementer",
+        "stage": "revision_batch",
+        "round": 2,
+        "inputs": [
+          "handoffs/60-codex-review-r1.md"
+        ],
+        "status": "completed",
+        "next_actor": "codex"
+      }
+    },
+    {
+      "filename": "80-codex-review-r2.md",
+      "content": "# Codex Review Round 2\n\n## Summary\n\nThe feature now meets the approved scope. Only final polish and delivery notes remain.\n\n## Findings\n\n- Required behavior is covered\n- Tests align with the PRD and user flow\n\n## Final Required Changes\n\n- Add a short final implementation note\n- Keep delivery artifacts concise\n\n## Optional Improvements\n\n- None\n\n## Gate Decision\n\n`fix_before_proceeding`",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "reviewer",
+        "stage": "review",
+        "round": 2,
+        "inputs": [
+          "handoffs/70-claude-batch-r2.md"
+        ],
+        "status": "completed",
+        "next_actor": "claude_code"
+      }
+    },
+    {
+      "filename": "90-claude-final.md",
+      "content": "# Claude Code Final Revision\n\n## Final Changes\n\n- Added final delivery note\n- Confirmed the last test run and report format\n\n## Files Changed\n\n- `tests/test_greeter.py`\n- `docs/example-note.md`\n\n## Verification Run\n\n- `python3 -m unittest tests.test_greeter -v`\n\n## Remaining Caveats\n\n- This example is intentionally minimal",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "claude_code",
+        "role": "implementer",
+        "stage": "final_revision",
+        "status": "completed",
+        "next_actor": "human"
+      }
+    },
+    {
+      "filename": "95-integration-checklist.md",
+      "content": "# Integration Checklist\n\n- [x] Required tests have been run\n- [x] Required build checks have been run\n- [x] Repo state is understandable\n- [x] Merge readiness has been reviewed\n- [x] Branch or worktree cleanup is complete\n- [x] Follow-up items are documented",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "human",
+        "role": "integrator",
+        "stage": "integration",
+        "status": "completed",
+        "next_actor": "human"
+      }
+    },
+    {
+      "filename": "99-next-cycle.md",
+      "content": "# Next Cycle\n\n## Architectural Debt\n\n- The example does not yet show a medium-sized phased task\n- The example assumes Python rather than showing a language-agnostic workflow\n\n## Deferred Work\n\n- Add a medium-size example with explicit phase gates\n- Add helper docs for repo validation failures\n\n## Product Polish Opportunities\n\n- Add rendered diagrams for the workflow\n- Add a stricter validator for frontmatter and required sections\n\n## Next Spec Candidate\n\nCreate a medium-sized example task that demonstrates batch reviews and phase gating across backend and UI work.",
+      "frontmatter": {
+        "task_id": "TASK-2026-03-15-example-greeter",
+        "author": "codex",
+        "role": "planner",
+        "stage": "next_cycle",
+        "status": "draft",
+        "next_actor": "human"
+      }
+    }
+  ],
+  "runLog": [
+    {
+      "timestamp": "2026-03-15T10:00:00Z",
+      "event": "task_created",
+      "actor": "human"
+    },
+    {
+      "timestamp": "2026-03-15T10:10:00Z",
+      "event": "prd_completed",
+      "actor": "codex"
+    },
+    {
+      "timestamp": "2026-03-15T10:45:00Z",
+      "event": "implementation_completed",
+      "actor": "claude_code"
+    },
+    {
+      "timestamp": "2026-03-15T11:20:00Z",
+      "event": "task_completed",
+      "actor": "human"
+    }
+  ]
+}

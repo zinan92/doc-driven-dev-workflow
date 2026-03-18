@@ -1,0 +1,14 @@
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/**/*.tsbuildinfo
+frontend/scripts/build-example-task.js
+frontend/scripts/build-example-task.d.ts
+frontend/scripts/build-example-task.d.ts.map
+frontend/tailwind.config.js
+frontend/tailwind.config.d.ts
+frontend/tailwind.config.d.ts.map
+frontend/vite.config.js
+frontend/vite.config.d.ts
+frontend/vite.config.d.ts.map
+.DS_Store

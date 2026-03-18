@@ -1,0 +1,109 @@
+task_id: "WDD-V1-EXAMPLE-REPLAY"
+flow_name: "workflow-replay-cockpit"
+author: codex
+role: planner
+stage: user_flow
+status: draft
+steps:
+  - id: landing
+    name: "Open replay cockpit"
+    actor: user
+    step_type: script
+    goal: "See the complete workflow and current task state immediately"
+    inputs:
+      - example-task dataset
+    outputs:
+      - rendered_workflow_graph
+      - rendered_summary_bar
+    validation:
+      type: schema
+      schema: replay_landing_v1
+    next:
+      - inspect_current_state
+
+  - id: inspect_current_state
+    name: "Inspect current state"
+    actor: user
+    step_type: script
+    goal: "Understand current stage, actor, and status within 10 seconds"
+    inputs:
+      - rendered_workflow_graph
+      - rendered_summary_bar
+      - state_snapshot
+    outputs:
+      - current_state_understanding
+    validation:
+      type: schema
+      schema: state_summary_v1
+    next:
+      - select_node
+      - select_timeline_event
+
+  - id: select_node
+    name: "Select workflow node"
+    actor: user
+    step_type: script
+    goal: "Inspect one canonical stage in detail"
+    inputs:
+      - selected_workflow_node
+      - step_metadata
+    outputs:
+      - step_detail_panel
+      - artifact_preview
+    validation:
+      type: schema
+      schema: step_detail_v1
+    next:
+      - inspect_artifact
+      - select_timeline_event
+
+  - id: inspect_artifact
+    name: "Inspect artifact"
+    actor: user
+    step_type: script
+    goal: "Read the selected handoff, schema, or state evidence"
+    inputs:
+      - selected_artifact
+      - artifact_content
+    outputs:
+      - artifact_understanding
+    validation:
+      type: schema
+      schema: artifact_preview_v1
+    next:
+      - select_node
+      - select_timeline_event
+
+  - id: select_timeline_event
+    name: "Replay a historical point"
+    actor: user
+    step_type: script
+    goal: "Move the interface to a prior recorded event"
+    inputs:
+      - selected_timeline_event
+      - run_log
+      - historical_state_mapping
+    outputs:
+      - replayed_workflow_state
+      - replayed_detail_panel
+    validation:
+      type: schema
+      schema: replay_state_v1
+    next:
+      - select_node
+      - inspect_artifact
+
+  - id: end_state
+    name: "Operator understands workflow state"
+    actor: user
+    step_type: script
+    goal: "Reach fast understanding without opening raw files manually"
+    inputs:
+      - replayed_workflow_state
+      - artifact_understanding
+    outputs:
+      - task_state_comprehension
+    validation:
+      type: schema
+      schema: operator_comprehension_v1
+    next: []
