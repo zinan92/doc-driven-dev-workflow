@@ -25,6 +25,38 @@
 
 现在仓库还额外包含一个 `Workflow Driven Developer` 前端原型：它会扫描 repo 内 `examples/` 和 `tasks/` 下符合协议的 task 目录，读取其中的 `state.json`、`run-log.jsonl` 和 `handoffs/*.md`，把黑箱式的 doc-driven task 变成可观察的 workflow cockpit。
 
+## Build Anything 生命周期
+
+如果把这个仓库当成一套能“build anything”的完整链路，我推荐用一个更高层的 5-phase 视角来理解它：
+
+```mermaid
+flowchart LR
+    A[Research 调研] --> B[Design 设计]
+    B --> C[Development 开发]
+    C --> D[Packaging 包装]
+    D --> E[Maintenance 维护]
+```
+
+它和当前仓库里的 15-stage canonical workflow 不是冲突关系，而是上下两层：
+
+- `Build Anything` 5-phase 是完整产品生命周期
+- 15-stage canonical workflow 是当前仓库已经落地并可被脚本约束的执行层
+
+每个 phase 的建议输出如下：
+
+| Phase | 输出 |
+|------|------|
+| Research | research brief、对标产品决策、关键页面/关键 flow 截图、recommendation brief |
+| Design | intake、scope estimate、PRD、PRD reality review、user flow、human approval、implementation plan、execution prompt |
+| Development | code changes、batch execution reports、review reports、phase gate decisions、final revision report |
+| Packaging | integration checklist、最终验证证据、merge-ready 状态、README/demo/screenshots/changelog 等交付物 |
+| Maintenance | next-cycle brief、debt/backlog、polish opportunities、下一轮 spec/PRD 候选 |
+
+详细说明见：
+
+- `docs/build-anything-workflow.md`
+- `docs/development-workflow.md`
+
 ## 架构
 
 ```text
@@ -201,7 +233,7 @@ doc-driven-dev-workflow/
 当前原型支持：
 
 - 左侧 `Task Rail` 浏览 repo-local workflow snapshots
-- 中间 `Workflow Canvas` 按 4 个 phase 展示完整 15-stage canonical workflow
+- 中间 `Workflow Canvas` 按 4 个 canonical enforcement phases 展示完整 15-stage workflow；这是 Build Anything 5-phase 生命周期中的执行层
 - 右侧 `Inspector` 查看 step detail、artifacts、working folder 和 context
 - 基于本地 snapshots 的手动 replay
 - 通过 writer scripts 接入真实任务状态

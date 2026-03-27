@@ -4,6 +4,9 @@
 
 This document is the canonical instruction set for document-driven software delivery using raw terminal sessions.
 
+For the higher-level end-to-end product lifecycle, read `docs/build-anything-workflow.md`.
+This file defines the currently enforced execution model, not the entire possible lifecycle.
+
 It exists to minimize drift, ambiguity, and low-quality execution by separating:
 
 - planning from implementation
@@ -113,6 +116,56 @@ Machine state files hold:
 Do not rewrite history.
 
 Every agent-to-agent or human-to-agent handoff creates a new document. Old handoffs remain read-only.
+
+## Two Workflow Views
+
+This repository now has two valid workflow views:
+
+1. **Build Anything workflow**
+   The full product lifecycle:
+   `Research -> Design -> Development -> Packaging -> Maintenance`
+2. **Canonical workflow**
+   The currently enforced 15-stage execution model used by scripts and the dashboard
+
+The Build Anything workflow is the strategic model.
+The canonical workflow is the operational model.
+
+## Build Anything Macro Lifecycle
+
+Recommended left-to-right lifecycle:
+
+```mermaid
+flowchart LR
+    A[Research] --> B[Design]
+    B --> C[Development]
+    C --> D[Packaging]
+    D --> E[Maintenance]
+```
+
+### Phase Outputs
+
+| Phase | Required result |
+|------|------------------|
+| Research | A concrete anchor on real products, with screenshot evidence and a short recommendation brief |
+| Design | Explicit documents that define product intent, user flow, approval state, and execution plan |
+| Development | Working code plus bounded execution reports, review reports, and final revision evidence |
+| Packaging | Clean integration, final verification, merge readiness, and delivery-facing artifacts |
+| Maintenance | Captured debt, learnings, follow-ups, and the next-cycle candidate |
+
+### Mapping to the Current Canonical Workflow
+
+| Build Anything phase | Canonical workflow mapping |
+|------|-----------------------------|
+| Research | Upstream of the current enforced flow; should happen before or at the start of Stage 0 |
+| Design | Stages 0-8 |
+| Development | Stages 9-12 |
+| Packaging | Stage 13 |
+| Maintenance | Stage 14 |
+
+Important:
+
+- Research is recommended as a first-class lifecycle phase even though it is not yet modeled in `docs/canonical-workflow.json`
+- Packaging and Maintenance are separated conceptually even though the current canonical workflow groups them inside `integration_cleanup`
 
 ## Task Lifecycle
 
