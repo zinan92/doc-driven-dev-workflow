@@ -2,10 +2,11 @@
 
 # Doc-Driven Development Workflow
 
-**把需求澄清、PRD、执行计划、实现批次和评审结论都沉淀为文档，让 `Codex` 与 `Claude Code` 在终端里按可审计流程协作，并通过 local-first observer dashboard 可视化整个 workflow。**
+**把模糊想法收敛成可执行 handoff，让人类、`Codex`、`Claude Code` 和脚本在同一套可审计 workflow 里协作。**
 
 [![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://python.org)
-[![Workflow](https://img.shields.io/badge/workflow-terminal--first-black.svg)](https://github.com/zinan92/doc-driven-dev-workflow)
+[![React](https://img.shields.io/badge/react-19-blue.svg)](https://react.dev)
+[![Workflow](https://img.shields.io/badge/workflow-5_phase%20%7C%2022_stage-black.svg)](https://github.com/zinan92/doc-driven-dev-workflow)
 
 </div>
 
@@ -13,169 +14,51 @@
 
 ## 痛点
 
-直接把任务扔给 coding agent，往往会把需求澄清、方案设计、实现和评审揉成一轮对话。结果通常不是“更快”，而是需求漂移、上下文丢失、评审滞后，以及关键决策只留在聊天记录里。
+把任务直接丢给 coding agent，常见结果不是更快，而是更乱：需求澄清、研究、PRD、执行、评审全部混在一轮对话里，关键决策只存在聊天记录，没有稳定 handoff，也没有明确的审批点。
 
-对个人开发者尤其如此：没有正式项目管理系统，也没有复杂 orchestrator，但依然需要一个可重复、可检查、可交接的工作流来约束代理行为。
+对个人开发者和小团队尤其明显。你可能没有 Jira、没有复杂 orchestrator，也不想引入重型流程工具，但依然需要一套可以重复、可以检查、可以交接、可以给 AI 读懂的开发协议。
 
 ## 解决方案
 
-这个仓库提供了一套 repo-local、document-driven 的开发流程，把任务生命周期拆成 intake、PRD、user flow、implementation plan、execution prompt、batch review 和 final integration 等稳定 handoff。文档是协作面，脚本负责搭建与校验，终端会话只负责执行。
+这个仓库提供了一套 terminal-first、repo-local、document-driven 的开发 workflow。它把开发过程拆成 `Research -> Design -> Development -> Packaging -> Maintenance` 五个 phase，并在机器可读层进一步细化成 `22` 个 stages。
 
-你可以把它理解为一套轻量但严格的“开发协议”：人负责目标、取舍和审批，`Codex` 负责规划和评审，`Claude Code` 负责实现与修订，所有阶段性结果都落在仓库里的文件系统中。
-
-现在仓库还额外包含一个 `Workflow Driven Developer` 前端原型：它会扫描 repo 内 `examples/` 和 `tasks/` 下符合协议的 task 目录，读取其中的 `state.json`、`run-log.jsonl` 和 `handoffs/*.md`，把黑箱式的 doc-driven task 变成可观察的 workflow cockpit。
-
-## Build Anything 生命周期
-
-如果把这个仓库当成一套能“build anything”的完整链路，我推荐用一个更高层的 5-phase 视角来理解它：
-
-```mermaid
-flowchart LR
-    A[Research 调研] --> B[Design 设计]
-    B --> C[Development 开发]
-    C --> D[Packaging 包装]
-    D --> E[Maintenance 维护]
-```
-
-它和当前仓库里的 canonical workflow 不是冲突关系，而是上下两层：
-
-- `Build Anything` 5-phase 是完整产品生命周期
-- canonical workflow 是当前仓库已经落地并可被脚本约束的执行层
-
-当前 canonical workflow 已升级为：
-
-- `5` 个 phase
-- `22` 个 stage
-- 每个 stage 都带有 `execution mode`、`outputs` 和 `recommended skills`
-
-## Build Anything Diagram
-
-图例：
-
-- `AI` = `ai_routing`
-- `SCR` = `script`
-- `GATE` = `human_approval_gate`
-
-```mermaid
-flowchart LR
-  subgraph P1[Phase 1: Research]
-    R0["0 Clarify Objective\nAI | 00-intake\nclarify-intention"] --> R1["1 Classify Task\nAI | 05/08\nnone"]
-    R1 --> R2["2 Product Research\nAI | 09-product-research\nproduct-research"]
-    R2 --> R3["3 Reference Evidence\nAI | 09-reference-evidence\nproduct-research"]
-    R3 --> R4["4 Research Approval\nGATE | 09-research-approval\nnone"]
-  end
-
-  subgraph P2[Phase 2: Design]
-    D5["5 Draft PRD\nAI | 10-prd\nbrainstorming"] --> D6["6 PRD Reality Review\nAI | 15-review\nnone"]
-    D6 --> D7["7 Draft User Flow\nAI | 20/21-user-flow\nnone"]
-    D7 --> D8["8 Prototype Brief\nAI | 22-prototype-brief\nui-ux-pro-max"]
-    D8 --> D9["9 Design Approval\nGATE | 25-human-approval\nnone"]
-    D9 --> D10["10 Implementation Plan\nAI | 30/32-plan\nwriting-plans"]
-    D10 --> D11["11 Plan Review\nAI | 35-plan-review\nwriting-plans"]
-    D11 --> D12["12 Execution Prompt\nAI | 40-execution-prompt\nnone"]
-  end
-
-  subgraph P3[Phase 3: Development]
-    V13["13 Batch Execution\nAI | 50/70-batch\ntest-driven-development"] --> V14["14 Batch Review\nAI | 60/80-review\nrequesting-code-review"]
-    V14 --> V15["15 Major Phase Gate\nGATE | 85-phase-gate\nnone"]
-    V15 --> V16["16 Final Revision\nAI | 90-claude-final\nverification-before-completion"]
-  end
-
-  subgraph P4[Phase 4: Packaging]
-    K17["17 Integrate and Verify\nSCR | 95-checklist\nverification-before-completion"] --> K18["18 Release Package\nAI | 96-release-package\nproduct-readme"]
-    K18 --> K19["19 Delivery Approval\nGATE | 97-delivery-approval\nnone"]
-  end
-
-  subgraph P5[Phase 5: Maintenance]
-    M20["20 Capture Next Cycle\nAI | 99-next-cycle\nnone"] --> M21["21 Backlog and Debt\nAI | 100-backlog-and-debt\nnone"]
-  end
-
-  R4 --> D5
-  D12 --> V13
-  V16 --> K17
-  K19 --> M20
-```
-
-每个 phase 的建议输出如下：
-
-| Phase | 输出 |
-|------|------|
-| Research | research brief、对标产品决策、关键页面/关键 flow 截图、recommendation brief |
-| Design | intake、scope estimate、PRD、PRD reality review、user flow、human approval、implementation plan、execution prompt |
-| Development | code changes、batch execution reports、review reports、phase gate decisions、final revision report |
-| Packaging | integration checklist、最终验证证据、merge-ready 状态、README/demo/screenshots/changelog 等交付物 |
-| Maintenance | next-cycle brief、debt/backlog、polish opportunities、下一轮 spec/PRD 候选 |
-
-详细说明见：
-
-- `docs/build-anything-workflow.md`
-- `docs/development-workflow.md`
-
-## Stage Manifest
-
-| # | Phase | Stage | Mode | Main outputs | Recommended skills |
-|---|-------|-------|------|--------------|--------------------|
-| 0 | Research | Clarify Objective | AI | `handoffs/00-intake.md` | `clarify-intention` |
-| 1 | Research | Classify Task and Estimate Size | AI | `handoffs/05-task-classification.yaml`, `handoffs/08-scope-estimate.md` | none |
-| 2 | Research | Run Product Research | AI | `handoffs/09-product-research.md` | `product-research` |
-| 3 | Research | Collect Reference Evidence | AI | `handoffs/09-reference-evidence.md` | `product-research` |
-| 4 | Research | Research Approval Gate | GATE | `handoffs/09-research-approval.md` | none |
-| 5 | Design | Draft PRD | AI | `handoffs/10-prd.md` | `brainstorming` |
-| 6 | Design | Review PRD Against Reality | AI | `handoffs/15-prd-reality-review.md` | none |
-| 7 | Design | Draft User Flow | AI | `handoffs/20-user-flow.md`, `handoffs/21-user-flow.yaml` | none |
-| 8 | Design | Draft Prototype Brief | AI | `handoffs/22-prototype-brief.md` | `ui-ux-pro-max` |
-| 9 | Design | Design Approval Gate | GATE | `handoffs/25-human-approval.md` | none |
-| 10 | Design | Draft Implementation Plan | AI | `handoffs/30-implementation-plan.md`, `handoffs/32-execution-workflow.yaml` | `writing-plans` |
-| 11 | Design | Review Implementation Plan | AI | `handoffs/35-plan-review.md` | `writing-plans` |
-| 12 | Design | Write Execution Prompt | AI | `handoffs/40-execution-prompt.md` | none |
-| 13 | Development | Claude Code Executes in Batches | AI | `handoffs/50-claude-batch-r{n}.md` | `test-driven-development` |
-| 14 | Development | Codex Reviews Each Batch | AI | `handoffs/60-codex-review-r{n}.md` | `requesting-code-review` |
-| 15 | Development | Gate Each Major Phase | GATE | `handoffs/85-phase-gate.md` | none |
-| 16 | Development | Final Revision | AI | `handoffs/90-claude-final.md` | `verification-before-completion` |
-| 17 | Packaging | Integrate and Verify | SCR | `handoffs/95-integration-checklist.md` | `verification-before-completion` |
-| 18 | Packaging | Prepare Release Package | AI | `handoffs/96-release-package.md` | `product-readme` |
-| 19 | Packaging | Delivery Approval Gate | GATE | `handoffs/97-delivery-approval.md` | none |
-| 20 | Maintenance | Capture Next Cycle | AI | `handoffs/99-next-cycle.md` | none |
-| 21 | Maintenance | Update Backlog and Debt | AI | `handoffs/100-backlog-and-debt.md` | none |
+这不是一份静态文档，而是一整套可运行的工作流资产：workflow spec、task 模板、状态写入脚本、结构校验脚本，以及一个 local-first observer dashboard。你可以把它当成自己的 AI-native 开发操作系统。
 
 ## 架构
 
 ```text
-┌──────────────┐      ┌────────────────────────────┐
-│    Human     │─────▶│ intake / approval handoffs │
-└──────────────┘      └─────────────┬──────────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────────┐
-                         │ docs/development-       │
-                         │ workflow.md             │
-                         │ canonical workflow spec │
-                         └─────────────┬───────────┘
-                                       │
-                    ┌──────────────────┼──────────────────┐
-                    ▼                  ▼                  ▼
-          ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
-          │     Codex      │  │  Claude Code   │  │    Scripts     │
-          │ plan / review  │  │ implement / fix│  │ scaffold/      │
-          │ write handoffs │  │ write reports  │  │ validate/next  │
-          └────────┬───────┘  └────────┬───────┘  └────────┬───────┘
-                   │                   │                   │
-                   └───────────────────┴───────────────────┘
-                                       │
-                                       ▼
-                         ┌─────────────────────────┐
-                         │ tasks/<task-id>/        │
-                         │ handoffs/ + status.md   │
-                         │ + system/state.json     │
-                         │ + system/run-log.jsonl  │
-                         └─────────────┬───────────┘
-                                       │
-                                       ▼
-                         ┌─────────────────────────┐
-                         │ Workflow Driven         │
-                         │ Developer dashboard     │
-                         │ local-first observer    │
-                         └─────────────────────────┘
+┌──────────────┐
+│    Human     │
+│ goals/gates  │
+└──────┬───────┘
+       │ approvals / direction
+       ▼
+┌─────────────────────────────────────────────┐
+│ docs/canonical-workflow.json                │
+│ docs/development-workflow.md                │
+│ docs/build-anything-workflow.md             │
+└──────────────┬──────────────────────────────┘
+               │ source of truth
+      ┌────────┼──────────┐
+      ▼        ▼          ▼
+┌──────────┐ ┌──────────┐ ┌──────────────────┐
+│  Codex   │ │ Claude   │ │     Scripts      │
+│ plan/rev │ │ Code impl│ │ scaffold/guard   │
+│ process  │ │ revise   │ │ state/event I/O  │
+└────┬─────┘ └────┬─────┘ └────────┬─────────┘
+     └────────────┴────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────┐
+│ tasks/TASK-YYYY-MM-DD-name/                 │
+│ status.md + handoffs/*.md + state.json      │
+│ + run-log.jsonl                             │
+└──────────────────┬──────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────┐
+│ frontend/ workflow observer dashboard       │
+│ task rail + workflow canvas + inspector     │
+└─────────────────────────────────────────────┘
 ```
 
 ## 快速开始
@@ -185,33 +68,27 @@ flowchart LR
 git clone https://github.com/zinan92/doc-driven-dev-workflow.git
 cd doc-driven-dev-workflow
 
-# 2. 安装依赖
-# 本项目默认无第三方 Python 依赖，确认 python3 可用即可
-
-# 3. 配置环境变量
-# 本项目默认无需 .env，可跳过此步
-
-# 4. 启动服务
-python3 scripts/scaffold_dev_workflow_task.py \
-  --name "My First Task" \
-  --repo-path /path/to/my/repo
-
-python3 scripts/validate_dev_workflow_task.py tasks/<task-id>
-python3 scripts/dev_workflow_next_step.py tasks/<task-id>
-```
-
-### 启动 Workflow Observer Dashboard
-
-```bash
+# 2. 安装前端依赖（dashboard 用）
 cd frontend
 npm install
+cd ..
+
+# 3. 为你的真实项目创建一个 workflow task
+python3 scripts/scaffold_dev_workflow_task.py \
+  --name "Build Feature X" \
+  --repo-path /absolute/path/to/your/repo
+
+# 4. 校验 task 结构并查看下一步
+python3 scripts/validate_dev_workflow_task.py tasks/<task-id>
+python3 scripts/dev_workflow_next_step.py tasks/<task-id>
+
+# 5. 启动 observer dashboard
+cd frontend
 npm run build:data
 npm run dev
 ```
 
-默认会扫描 `examples/` 和 `tasks/` 下的本地 workflow snapshots，把 doc-driven task 可视化成三栏式 read-only observer cockpit。左侧是 task rail，中间是 workflow canvas，右侧是 inspector。
-
-如果 task 在其他 repo 里生成，也可以显式加入外部 task roots：
+如果你的 task 不在本仓库自带的 `tasks/` 下，而是在外部目录里，可以这样让 dashboard 扫描：
 
 ```bash
 cd frontend
@@ -219,110 +96,137 @@ WORKFLOW_SNAPSHOT_ROOTS="/absolute/path/to/external/tasks" npm run build:data
 npm run dev
 ```
 
-也支持多个 roots，按系统路径分隔符拼接：
-
-```bash
-WORKFLOW_SNAPSHOT_ROOTS="/path/one/tasks:/path/two/tasks" npm run build:data
-```
-
 ## 功能一览
 
 | 功能 | 说明 | 状态 |
 |------|------|------|
-| Canonical workflow spec | 用 `docs/development-workflow.md` 定义完整的阶段、角色和审批边界 | 已完成 |
-| Task scaffolding | 通过脚本生成标准化任务目录、占位符和初始 system files | 已完成 |
-| Structure validation | 校验 handoff 文件、frontmatter、状态摘要和 `state.json` 关键字段 | 已完成 |
-| Next-step recommendation | 基于 `system/state.json` 给出当前任务下一步建议 | 已完成 |
-| Workflow state writer scripts | 用脚本稳定写入 `state.json` 和 `run-log.jsonl`，供 observer 读取 | 已完成 |
-| Example task references | 提供 small / medium 示例任务，帮助理解产物形态 | 已完成 |
-| Workflow Driven Developer | local-first observer dashboard，自动读取 repo 内 task snapshots，展示 workflow canvas、artifacts 和 replay | 原型已完成 |
-| Agent-as-runner prompt | 让 Claude/Codex 直接读取 workflow 并通过脚本推进状态 | 已完成 |
-| Packaging / CI automation | 包管理、CI、自动 PR 流程等能力暂未内建 | 计划中 |
+| 5-phase / 22-stage workflow | 把完整 Build Anything 生命周期落成 machine-readable canonical workflow | 已完成 |
+| Task scaffolding | 一键生成标准 task 目录、handoffs、state 和 run log | 已完成 |
+| Workflow guards | 强制 stage 顺序、actor ownership、human gates 和前置输入 | 已完成 |
+| State / event writers | 通过脚本稳定写入 `state.json` 和 `run-log.jsonl` | 已完成 |
+| Local-first observer dashboard | 可视化 task rail、workflow canvas、artifact preview 和 replay timeline | 已完成 |
+| Example tasks | small / medium 示例任务，帮助理解 artifact 形态 | 已完成 |
+| Product research stage | 在 PRD 前先做 anchor research 和 reference evidence 收集 | 已完成 |
+| Release / maintenance artifacts | 把 packaging 与 maintenance 拆成正式 stage | 已完成 |
+| CI / hosted orchestration | 云端托管、自动 PR、远程协作基础设施 | 计划中 |
 
 ## API 参考
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| `CLI` | `python3 scripts/scaffold_dev_workflow_task.py --name "<task>" --repo-path <repo>` | 创建新的工作流任务目录 |
-| `CLI` | `python3 scripts/validate_dev_workflow_task.py tasks/<task-id>` | 校验任务目录结构是否满足协议要求 |
-| `CLI` | `python3 scripts/dev_workflow_next_step.py tasks/<task-id>` | 根据当前 stage 输出推荐下一步动作 |
-| `CLI` | `python3 scripts/update_task_state.py tasks/<task-id> --stage <stage-id> --artifact <path>` | 通过稳定接口更新 observer 可读状态 |
-| `CLI` | `python3 scripts/append_task_event.py tasks/<task-id> --event <event-name> --artifact <path>` | 通过稳定接口追加结构化 workflow 事件 |
-| `DOC` | `docs/development-workflow.md` | 规范任务生命周期、角色分工和阶段契约 |
-| `REF` | `examples/example-task/README.md` | 展示小型任务的完整参考产物 |
-| `WEB` | `frontend/` | 本地 workflow observer dashboard 原型 |
+| `CLI` | `python3 scripts/scaffold_dev_workflow_task.py --name "<task>" --repo-path <repo>` | 创建新的 workflow task |
+| `CLI` | `python3 scripts/validate_dev_workflow_task.py tasks/<task-id>` | 校验 task 是否满足协议要求 |
+| `CLI` | `python3 scripts/dev_workflow_next_step.py tasks/<task-id>` | 输出当前 task 的推荐下一步 |
+| `CLI` | `python3 scripts/update_task_state.py tasks/<task-id> --stage <stage-id> --actor <actor> --artifact <path>` | 通过受控接口更新 task 状态 |
+| `CLI` | `python3 scripts/append_task_event.py tasks/<task-id> --event <event> --artifact <path>` | 追加结构化 workflow 事件 |
+| `DOC` | `docs/canonical-workflow.json` | 机器可读 source of truth |
+| `DOC` | `docs/development-workflow.md` | 人类可读 workflow 说明 |
+| `DOC` | `docs/build-anything-workflow.md` | 5-phase 生命周期解释 |
+| `WEB` | `frontend/` | local workflow observer dashboard |
 
 ## 技术栈
 
 | 层级 | 技术 | 用途 |
 |------|------|------|
-| 运行时 | Python 3.9+ | 运行脚本式工作流工具 |
-| 框架 | Standard Library | 通过 `argparse`、`pathlib`、`json`、`shutil` 实现轻量工具链 |
-| 数据存储 | Markdown + YAML + JSON | 保存 handoff、状态和机器可读流程信息 |
-| 前端 | React + TypeScript + Vite | 本地 workflow observer dashboard |
-| 执行环境 | Terminal + Git | 在本地仓库中运行文档驱动协作流程 |
+| 运行时 | Python 3.9+ | workflow scripts 与 task scaffolding |
+| 前端 | React 19 + TypeScript + Vite | observer dashboard |
+| 测试 | Vitest + Testing Library | frontend 行为验证 |
+| 解析 | `json` / `yaml` / `gray-matter` | handoff、state 与 schema 解析 |
+| 协作面 | Markdown + YAML + JSONL | 文档 handoff 与 workflow state |
 
 ## 项目结构
 
 ```text
 doc-driven-dev-workflow/
-├── README.md                               # 项目入口与使用说明
 ├── docs/
-│   ├── development-workflow.md             # Canonical workflow instruction
-│   ├── plans/                              # 实现计划
-│   ├── workflow-driven-developer/          # observer/dashboard 设计文档
-│   └── templates/
-│       └── development-workflow/           # 标准任务模板
-├── examples/
-│   ├── example-task/                       # Small task 示例
-│   └── medium-example-task/                # Medium task 示例
-├── frontend/                               # Workflow Driven Developer 原型
+│   ├── canonical-workflow.json                 # 机器可读 workflow source of truth
+│   ├── build-anything-workflow.md              # 5-phase 生命周期说明
+│   ├── development-workflow.md                 # 人类可读执行协议
+│   ├── templates/development-workflow/task-root/
+│   │   ├── handoffs/                           # 标准 handoff 模板
+│   │   ├── status.md
+│   │   └── system/state.json
+│   └── workflow-driven-developer/              # dashboard 相关设计文档
 ├── scripts/
-│   ├── scaffold_dev_workflow_task.py       # 生成任务目录
-│   ├── validate_dev_workflow_task.py       # 校验任务结构
-│   └── dev_workflow_next_step.py           # 输出下一步建议
-└── tests/
-    ├── test_scaffold_dev_workflow_task.py  # scaffolder 测试
-    └── test_dev_workflow_helpers.py        # validator / next-step 测试
+│   ├── scaffold_dev_workflow_task.py           # 创建 task
+│   ├── validate_dev_workflow_task.py           # 校验 task 结构
+│   ├── dev_workflow_next_step.py               # 推荐下一步
+│   ├── update_task_state.py                    # 状态写入
+│   ├── append_task_event.py                    # 事件写入
+│   └── workflow_guard.py                       # 核心 guard 逻辑
+├── examples/                                   # small / medium 参考 task
+├── tasks/                                      # 本地实际 task 工作目录
+├── frontend/                                   # observer dashboard
+├── CLAUDE.md                                   # agent instructions
+└── README.md
 ```
 
-## 适用场景
+## 配置
 
-- 你希望把 coding agent 从“随手对话式编码”提升为“有文档协议的受控执行”
-- 你想让 `Codex` 做规划与评审，让 `Claude Code` 做实现，但不想引入复杂平台
-- 你需要把审批、批次、评审结论和下一轮行动沉淀成 repo 内可追溯资产
-- 你想给 doc-driven task 增加一个 local-first 的观察面板，快速看懂当前进行到哪一步
+| 变量 | 说明 | 必填 | 默认值 |
+|------|------|------|--------|
+| `WORKFLOW_SNAPSHOT_ROOTS` | 给 dashboard 额外指定 task roots | 否 | 扫描 repo 内 `examples/` 和 `tasks/` |
 
-## 非目标
+## For AI Agents
 
-- 不是一个 full-blown OpenClaw 替代品
-- 不是一个 CI-first 自动化平台
-- 不是一个多代理并发 orchestrator
-- 不是“一句提示词自动完成所有开发”的 one-shot prompting 工具
+本节面向要直接使用这套 workflow 的 AI agent。
 
-## Workflow Observer
+推荐阅读顺序：
 
-`Workflow Driven Developer` 是这个仓库里的第一个 UI 原型。它不是 orchestrator，而是 observer。
+1. `README.md`
+2. `docs/build-anything-workflow.md`
+3. `docs/development-workflow.md`
+4. `docs/canonical-workflow.json`
+5. 当前 task 目录下的 `status.md`、`system/state.json`、`handoffs/`
 
-它当前的设计原则：
+执行规则：
 
-- `state.json` 作为当前状态真相
-- `run-log.jsonl` 作为历史事件流
-- `handoffs/*.md` 作为 step-level evidence
-- `status.md` 保留为 human-readable summary
+- 一次只推进一个 canonical stage，不要把多个 stage 混在一轮里
+- 所有 machine state 更新都走脚本，不要手改 `state.json` 和 `run-log.jsonl`
+- 遇到 `human_approval_gate` 必须停下，等待人类批准
+- 先做 `Research`，再做 `Design`，不要从空气里直接写 PRD 或直接开工
+- 如果 workflow 为当前 stage 推荐了 skill，优先使用它
 
-当前原型支持：
+最推荐的使用方式：
 
-- 左侧 `Task Rail` 浏览 repo-local workflow snapshots
-- 中间 `Workflow Canvas` 按 5 个 canonical phases 展示完整 22-stage workflow；这是 Build Anything 生命周期的执行层
-- 右侧 `Inspector` 查看 step detail、artifacts、working folder 和 context
-- 基于本地 snapshots 的手动 replay
-- 通过 writer scripts 接入真实任务状态
-- 通过 agent-runner prompt 让 agent 读取 workflow 并推进状态
+- 单 AI 模式：同一个 agent 兼任 planner / reviewer / executor，但仍然严格按 stage 推进
+- 双 AI 模式：`Codex` 负责 research、planning、review；`Claude Code` 负责 implementation 和 revision
+- 人类只负责目标、取舍和 gate approval，不负责手工维护流程状态
 
-相关文档：
+如果你要把这套仓库发给第三方朋友，最好的用法不是“让他读一遍 README 就开始”，而是：
 
-- `docs/workflow-driven-developer/front-end-prd.md`
-- `docs/workflow-driven-developer/user-flow.md`
-- `docs/workflow-driven-developer/observer-data-model.md`
-- `docs/workflow-driven-developer/agent-runner-prompt.md`
+1. 让他 clone 这个 repo
+2. 用 `scaffold_dev_workflow_task.py` 给自己的真实项目创建 task
+3. 让 AI 读取 workflow docs 和 task 目录
+4. 让 AI 严格按 canonical workflow 推进
+5. 用 dashboard 观察整个过程
+
+## 推荐用法
+
+这套仓库最适合三类人：
+
+- 想把 AI 开发从“聊天”升级成“流程”的个人开发者
+- 想保留 terminal-first 习惯，但又需要可审计 handoff 的小团队
+- 想把多个 AI 角色拆开协作的人，例如一个负责 plan/review，一个负责 coding
+
+最佳实践不是把一个模糊需求直接扔给 AI，而是把它放进这条链路里：
+
+```text
+Topic -> Research -> Design -> Development -> Packaging -> Maintenance
+```
+
+也就是说：
+
+- `Research` 先决定最像哪个现成产品，并留下证据
+- `Design` 再把研究结果转成 PRD、user flow、prototype brief 和 plan
+- `Development` 只负责按 plan 分批实现
+- `Packaging` 负责把“能运行”变成“能交付”
+- `Maintenance` 把 learnings 和 debt 沉淀回下一个 cycle
+
+## 相关文档
+
+- [Build Anything Workflow](docs/build-anything-workflow.md)
+- [Development Workflow](docs/development-workflow.md)
+- [Canonical Workflow JSON](docs/canonical-workflow.json)
+- [Frontend README](frontend/README.md)
+- [Example Task](examples/example-task/README.md)
