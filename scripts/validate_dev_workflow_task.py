@@ -16,11 +16,17 @@ REQUIRED_FILES = [
     "status.md",
     "decision-log.md",
     "handoffs/00-intake.md",
+    "handoffs/09-product-research.md",
+    "handoffs/09-reference-evidence.md",
     "handoffs/10-prd.md",
     "handoffs/20-user-flow.md",
     "handoffs/21-user-flow.yaml",
+    "handoffs/22-prototype-brief.md",
     "handoffs/30-implementation-plan.md",
     "handoffs/40-execution-prompt.md",
+    "handoffs/96-release-package.md",
+    "handoffs/97-delivery-approval.md",
+    "handoffs/100-backlog-and-debt.md",
     "system/state.json",
 ]
 
@@ -35,10 +41,12 @@ STATUS_REQUIRED_LINES = [
 
 REQUIRED_FRONTMATTER_FILES = [
     "handoffs/00-intake.md",
+    "handoffs/09-product-research.md",
     "handoffs/10-prd.md",
     "handoffs/20-user-flow.md",
     "handoffs/25-human-approval.md",
     "handoffs/40-execution-prompt.md",
+    "handoffs/97-delivery-approval.md",
 ]
 
 REQUIRED_SECTIONS = {

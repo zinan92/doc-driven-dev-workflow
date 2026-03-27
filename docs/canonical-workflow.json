@@ -1,207 +1,947 @@
 {
-  "version": "1.0",
+  "version": "2.0",
+  "phases": [
+    {
+      "id": "research",
+      "name": "Research",
+      "subtitle": "Anchor the idea to real products before deeper design starts.",
+      "stage_ids": [
+        "clarify_objective",
+        "classify_task",
+        "product_research",
+        "collect_reference_evidence",
+        "research_approval_gate"
+      ]
+    },
+    {
+      "id": "design",
+      "name": "Design",
+      "subtitle": "Turn the anchored idea into PRD, flow, prototype brief, and execution plan.",
+      "stage_ids": [
+        "draft_prd",
+        "prd_reality_review",
+        "draft_user_flow",
+        "draft_prototype_brief",
+        "design_approval_gate",
+        "draft_implementation_plan",
+        "review_implementation_plan",
+        "write_execution_prompt"
+      ]
+    },
+    {
+      "id": "development",
+      "name": "Development",
+      "subtitle": "Implement, review, gate, and finalize in bounded batches.",
+      "stage_ids": [
+        "claude_code_batch_execution",
+        "codex_reviews_batch",
+        "gate_major_phase",
+        "final_revision"
+      ]
+    },
+    {
+      "id": "packaging",
+      "name": "Packaging",
+      "subtitle": "Turn working code into a clean deliverable with explicit release artifacts.",
+      "stage_ids": [
+        "integrate_and_verify",
+        "prepare_release_package",
+        "delivery_approval_gate"
+      ]
+    },
+    {
+      "id": "maintenance",
+      "name": "Maintenance",
+      "subtitle": "Capture learnings, debt, and the next cycle after delivery.",
+      "stage_ids": [
+        "capture_next_cycle",
+        "update_backlog_and_debt"
+      ]
+    }
+  ],
   "stages": [
     {
       "id": "clarify_objective",
       "name": "Clarify Objective",
-      "phase": "intention_framing",
+      "phase": "research",
       "ordinal": 0,
       "actor": "codex",
-      "step_type": "llm",
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "clarify-intention"
+      ],
+      "output_summary": [
+        "clear objective",
+        "success condition",
+        "scope boundary"
+      ],
       "inputs": [],
-      "outputs": [{"path": "handoffs/00-intake.md", "required_sections": ["## Objective", "## Success Condition", "## Scope Boundary"]}],
-      "next": ["classify_task"],
+      "outputs": [
+        {
+          "path": "handoffs/00-intake.md",
+          "required_sections": [
+            "## Objective",
+            "## Success Condition",
+            "## Scope Boundary"
+          ]
+        }
+      ],
+      "next": [
+        "classify_task"
+      ],
       "gate": null,
-      "notes": "If objective is ambiguous, agent must ask human and stop."
+      "notes": "If objective is ambiguous, agent must ask the human and stop."
     },
     {
       "id": "classify_task",
-      "name": "Classify Task & Estimate Size",
-      "phase": "intention_framing",
+      "name": "Classify Task and Estimate Size",
+      "phase": "research",
       "ordinal": 1,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/00-intake.md"}],
-      "outputs": [
-        {"path": "handoffs/05-task-classification.yaml", "required_keys": ["task_type", "task_size"], "allowed_values": {"task_type": ["feature", "new_project", "bug_fix", "optimization"], "task_size": ["small", "medium", "large"]}},
-        {"path": "handoffs/08-scope-estimate.md", "required_sections": ["## Estimated Size", "## Estimate Summary"]}
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "task type",
+        "task size",
+        "estimate summary"
       ],
-      "next": ["draft_prd"],
+      "inputs": [
+        {
+          "path": "handoffs/00-intake.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/05-task-classification.yaml",
+          "required_keys": [
+            "task_type",
+            "task_size"
+          ],
+          "allowed_values": {
+            "task_type": [
+              "feature",
+              "new_project",
+              "bug_fix",
+              "optimization"
+            ],
+            "task_size": [
+              "small",
+              "medium",
+              "large"
+            ]
+          }
+        },
+        {
+          "path": "handoffs/08-scope-estimate.md",
+          "required_sections": [
+            "## Estimated Size",
+            "## Estimate Summary"
+          ]
+        }
+      ],
+      "next": [
+        "product_research"
+      ],
       "gate": null
+    },
+    {
+      "id": "product_research",
+      "name": "Run Product Research",
+      "phase": "research",
+      "ordinal": 2,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "product-research"
+      ],
+      "output_summary": [
+        "primary anchor",
+        "secondary anchor",
+        "similarity note"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/00-intake.md"
+        },
+        {
+          "path": "handoffs/05-task-classification.yaml"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/09-product-research.md",
+          "required_sections": [
+            "## Topic",
+            "## Primary Anchor",
+            "## Secondary Anchor",
+            "## Similarity Note",
+            "## Design Implication"
+          ]
+        }
+      ],
+      "next": [
+        "collect_reference_evidence"
+      ],
+      "gate": null
+    },
+    {
+      "id": "collect_reference_evidence",
+      "name": "Collect Reference Evidence",
+      "phase": "research",
+      "ordinal": 3,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "product-research"
+      ],
+      "output_summary": [
+        "key page screenshots",
+        "key flow screenshots",
+        "evidence links"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/09-product-research.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/09-reference-evidence.md",
+          "required_sections": [
+            "## Key Pages",
+            "## Key Flows",
+            "## Sources"
+          ]
+        }
+      ],
+      "next": [
+        "research_approval_gate"
+      ],
+      "gate": null
+    },
+    {
+      "id": "research_approval_gate",
+      "name": "Research Approval Gate",
+      "phase": "research",
+      "ordinal": 4,
+      "actor": "human",
+      "step_type": "human_approval_gate",
+      "recommended_skills": [],
+      "output_summary": [
+        "approved product anchors",
+        "approved evidence set"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/09-product-research.md"
+        },
+        {
+          "path": "handoffs/09-reference-evidence.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/09-research-approval.md",
+          "required_frontmatter": {
+            "author": "human",
+            "status": "approved"
+          }
+        }
+      ],
+      "next": [
+        "draft_prd"
+      ],
+      "gate": {
+        "type": "human_approval",
+        "check_field": "status",
+        "required_value": "approved",
+        "check_author": "human"
+      }
     },
     {
       "id": "draft_prd",
       "name": "Draft PRD",
-      "phase": "document_authoring",
-      "ordinal": 2,
+      "phase": "design",
+      "ordinal": 5,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/00-intake.md"}, {"path": "handoffs/05-task-classification.yaml"}],
-      "outputs": [{"path": "handoffs/10-prd.md", "required_sections": ["## Purpose", "## Scope", "## Non-Goals", "## Contracts", "## Expected Behavior", "## Acceptance Criteria", "## Constraints", "## Terminology"]}],
-      "next": ["prd_reality_review"],
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "brainstorming"
+      ],
+      "output_summary": [
+        "purpose",
+        "scope",
+        "acceptance criteria"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/00-intake.md"
+        },
+        {
+          "path": "handoffs/05-task-classification.yaml"
+        },
+        {
+          "path": "handoffs/09-product-research.md"
+        },
+        {
+          "path": "handoffs/09-reference-evidence.md"
+        },
+        {
+          "path": "handoffs/09-research-approval.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/10-prd.md",
+          "required_sections": [
+            "## Purpose",
+            "## Scope",
+            "## Non-Goals",
+            "## Contracts",
+            "## Expected Behavior",
+            "## Acceptance Criteria",
+            "## Constraints",
+            "## Terminology"
+          ]
+        }
+      ],
+      "next": [
+        "prd_reality_review"
+      ],
       "gate": null
     },
     {
       "id": "prd_reality_review",
       "name": "Review PRD Against Reality",
-      "phase": "document_authoring",
-      "ordinal": 3,
+      "phase": "design",
+      "ordinal": 6,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/10-prd.md"}],
-      "outputs": [{"path": "handoffs/15-prd-reality-review.md", "required_sections": ["## Corrections", "## Baseline Assumptions"]}],
-      "next": ["draft_user_flow"],
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "corrected PRD assumptions",
+        "resolved contradictions"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/10-prd.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/15-prd-reality-review.md",
+          "required_sections": [
+            "## Corrections",
+            "## Baseline Assumptions"
+          ]
+        }
+      ],
+      "next": [
+        "draft_user_flow"
+      ],
       "gate": null
     },
     {
       "id": "draft_user_flow",
       "name": "Draft User Flow",
-      "phase": "document_authoring",
-      "ordinal": 4,
+      "phase": "design",
+      "ordinal": 7,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/15-prd-reality-review.md"}],
-      "outputs": [
-        {"path": "handoffs/20-user-flow.md", "required_sections": ["## Entry Point", "## Steps", "## Completion"]},
-        {"path": "handoffs/21-user-flow.yaml", "required_keys": ["steps"], "step_required_keys": ["inputs", "outputs", "validation", "failure", "next"]}
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "human-readable flow",
+        "structured flow yaml"
       ],
-      "next": ["human_approval_gate"],
+      "inputs": [
+        {
+          "path": "handoffs/10-prd.md"
+        },
+        {
+          "path": "handoffs/15-prd-reality-review.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/20-user-flow.md",
+          "required_sections": [
+            "## Entry Point",
+            "## Steps",
+            "## Completion"
+          ]
+        },
+        {
+          "path": "handoffs/21-user-flow.yaml",
+          "required_keys": [
+            "steps"
+          ],
+          "step_required_keys": [
+            "inputs",
+            "outputs",
+            "validation",
+            "failure",
+            "next"
+          ]
+        }
+      ],
+      "next": [
+        "draft_prototype_brief"
+      ],
       "gate": null
     },
     {
-      "id": "human_approval_gate",
-      "name": "Human Approval Gate",
-      "phase": "document_authoring",
-      "ordinal": 5,
+      "id": "draft_prototype_brief",
+      "name": "Draft Prototype Brief",
+      "phase": "design",
+      "ordinal": 8,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "ui-ux-pro-max"
+      ],
+      "output_summary": [
+        "prototype direction",
+        "key screens",
+        "interaction notes"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/09-reference-evidence.md"
+        },
+        {
+          "path": "handoffs/10-prd.md"
+        },
+        {
+          "path": "handoffs/20-user-flow.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/22-prototype-brief.md",
+          "required_sections": [
+            "## Core Screens",
+            "## Key Interactions",
+            "## Visual Direction"
+          ]
+        }
+      ],
+      "next": [
+        "design_approval_gate"
+      ],
+      "gate": null
+    },
+    {
+      "id": "design_approval_gate",
+      "name": "Design Approval Gate",
+      "phase": "design",
+      "ordinal": 9,
       "actor": "human",
-      "step_type": "human_gate",
-      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/20-user-flow.md"}, {"path": "handoffs/21-user-flow.yaml"}],
-      "outputs": [{"path": "handoffs/25-human-approval.md", "required_frontmatter": {"author": "human", "status": "approved"}}],
-      "next": ["draft_implementation_plan"],
-      "gate": {"type": "human_approval", "check_field": "status", "required_value": "approved", "check_author": "human"}
+      "step_type": "human_approval_gate",
+      "recommended_skills": [],
+      "output_summary": [
+        "approved PRD",
+        "approved user flow",
+        "approved prototype brief"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/10-prd.md"
+        },
+        {
+          "path": "handoffs/20-user-flow.md"
+        },
+        {
+          "path": "handoffs/21-user-flow.yaml"
+        },
+        {
+          "path": "handoffs/22-prototype-brief.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/25-human-approval.md",
+          "required_frontmatter": {
+            "author": "human",
+            "status": "approved"
+          }
+        }
+      ],
+      "next": [
+        "draft_implementation_plan"
+      ],
+      "gate": {
+        "type": "human_approval",
+        "check_field": "status",
+        "required_value": "approved",
+        "check_author": "human"
+      }
     },
     {
       "id": "draft_implementation_plan",
       "name": "Draft Implementation Plan",
-      "phase": "document_authoring",
-      "ordinal": 6,
+      "phase": "design",
+      "ordinal": 10,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/10-prd.md"}, {"path": "handoffs/20-user-flow.md"}, {"path": "handoffs/25-human-approval.md"}],
-      "outputs": [
-        {"path": "handoffs/30-implementation-plan.md", "required_sections": ["## Phases", "## Verification", "## Stop Conditions"]},
-        {"path": "handoffs/32-execution-workflow.yaml"}
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "writing-plans"
       ],
-      "next": ["review_implementation_plan"],
+      "output_summary": [
+        "phase plan",
+        "verification plan",
+        "execution workflow"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/10-prd.md"
+        },
+        {
+          "path": "handoffs/20-user-flow.md"
+        },
+        {
+          "path": "handoffs/25-human-approval.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/30-implementation-plan.md",
+          "required_sections": [
+            "## Phases",
+            "## Verification",
+            "## Stop Conditions"
+          ]
+        },
+        {
+          "path": "handoffs/32-execution-workflow.yaml"
+        }
+      ],
+      "next": [
+        "review_implementation_plan"
+      ],
       "gate": null
     },
     {
       "id": "review_implementation_plan",
       "name": "Review Implementation Plan",
-      "phase": "document_authoring",
-      "ordinal": 7,
+      "phase": "design",
+      "ordinal": 11,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/30-implementation-plan.md"}, {"path": "handoffs/32-execution-workflow.yaml"}],
-      "outputs": [{"path": "handoffs/35-plan-review.md", "required_sections": ["## Reviewed Plan", "## Clarified Execution Order"]}],
-      "next": ["write_execution_prompt"],
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "writing-plans"
+      ],
+      "output_summary": [
+        "reviewed plan",
+        "clarified execution order"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/30-implementation-plan.md"
+        },
+        {
+          "path": "handoffs/32-execution-workflow.yaml"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/35-plan-review.md",
+          "required_sections": [
+            "## Reviewed Plan",
+            "## Clarified Execution Order"
+          ]
+        }
+      ],
+      "next": [
+        "write_execution_prompt"
+      ],
       "gate": null
     },
     {
       "id": "write_execution_prompt",
       "name": "Write Execution Prompt",
-      "phase": "document_authoring",
-      "ordinal": 8,
+      "phase": "design",
+      "ordinal": 12,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/30-implementation-plan.md"}, {"path": "handoffs/35-plan-review.md"}],
-      "outputs": [{"path": "handoffs/40-execution-prompt.md", "required_sections": ["## Repository", "## Execution Order", "## Stop Conditions", "## Forbidden Behaviors"]}],
-      "next": ["claude_code_batch_execution"],
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "formal execution handoff",
+        "source of truth rules"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/30-implementation-plan.md"
+        },
+        {
+          "path": "handoffs/35-plan-review.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/40-execution-prompt.md",
+          "required_sections": [
+            "## Repository",
+            "## Execution Order",
+            "## Stop Conditions",
+            "## Forbidden Behaviors"
+          ]
+        }
+      ],
+      "next": [
+        "claude_code_batch_execution"
+      ],
       "gate": null
     },
     {
       "id": "claude_code_batch_execution",
       "name": "Claude Code Executes in Batches",
-      "phase": "code_execution",
-      "ordinal": 9,
+      "phase": "development",
+      "ordinal": 13,
       "actor": "claude_code",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/40-execution-prompt.md"}],
-      "outputs": [{"path": "handoffs/50-claude-batch-r{round}.md", "required_sections": ["## Tasks Completed", "## Files Changed", "## Tests Run", "## Result", "## Next Proposed Batch"]}],
-      "next": ["codex_reviews_batch"],
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "test-driven-development"
+      ],
+      "output_summary": [
+        "batch implementation",
+        "batch report",
+        "tests run"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/40-execution-prompt.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/50-claude-batch-r{round}.md",
+          "required_sections": [
+            "## Tasks Completed",
+            "## Files Changed",
+            "## Tests Run",
+            "## Result",
+            "## Next Proposed Batch"
+          ]
+        }
+      ],
+      "next": [
+        "codex_reviews_batch"
+      ],
       "gate": null,
-      "notes": "Round-numbered output. Must not implement all at once for medium/large tasks."
+      "notes": "Round-numbered output. Must not implement all at once for medium and large tasks."
     },
     {
       "id": "codex_reviews_batch",
       "name": "Codex Reviews Each Batch",
-      "phase": "code_execution",
-      "ordinal": 10,
+      "phase": "development",
+      "ordinal": 14,
       "actor": "codex",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/50-claude-batch-r{round}.md"}],
-      "outputs": [{"path": "handoffs/60-codex-review-r{round}.md", "required_sections": ["## Findings", "## Required Changes", "## Gate Decision"], "gate_decision_enum": ["proceed", "fix_before_proceeding", "stop_and_rethink"]}],
-      "next": ["claude_code_batch_execution", "gate_major_phase", "final_revision"],
-      "gate": {"type": "review_gate", "decision_field": "## Gate Decision", "on_proceed": "final_revision", "on_fix": "claude_code_batch_execution", "on_stop": "blocked"},
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "requesting-code-review"
+      ],
+      "output_summary": [
+        "findings",
+        "required changes",
+        "gate decision"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/50-claude-batch-r{round}.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/60-codex-review-r{round}.md",
+          "required_sections": [
+            "## Findings",
+            "## Required Changes",
+            "## Gate Decision"
+          ],
+          "gate_decision_enum": [
+            "proceed",
+            "fix_before_proceeding",
+            "stop_and_rethink"
+          ]
+        }
+      ],
+      "next": [
+        "claude_code_batch_execution",
+        "gate_major_phase",
+        "final_revision"
+      ],
+      "gate": {
+        "type": "review_gate",
+        "decision_field": "## Gate Decision",
+        "on_proceed": "final_revision",
+        "on_fix": "claude_code_batch_execution",
+        "on_stop": "blocked"
+      },
       "notes": "Next stage depends on gate decision and round number."
     },
     {
       "id": "gate_major_phase",
       "name": "Gate Each Major Phase",
-      "phase": "code_execution",
-      "ordinal": 11,
-      "actor": "codex",
-      "step_type": "human_gate",
-      "inputs": [],
-      "outputs": [],
-      "next": ["claude_code_batch_execution"],
-      "gate": {"type": "phase_gate", "applies_to": ["medium", "large"]},
-      "notes": "Only active for medium/large tasks. Small tasks skip this."
+      "phase": "development",
+      "ordinal": 15,
+      "actor": "human",
+      "step_type": "human_approval_gate",
+      "recommended_skills": [],
+      "output_summary": [
+        "phase gate decision",
+        "upstream contract confirmation"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/60-codex-review-r{round}.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/85-phase-gate.md",
+          "required_frontmatter": {
+            "author": "human",
+            "status": "approved"
+          }
+        }
+      ],
+      "next": [
+        "claude_code_batch_execution",
+        "final_revision"
+      ],
+      "gate": {
+        "type": "phase_gate",
+        "applies_to": [
+          "medium",
+          "large"
+        ]
+      },
+      "notes": "Only active for medium and large tasks. Small tasks may proceed directly to final revision."
     },
     {
       "id": "final_revision",
       "name": "Final Revision",
-      "phase": "code_execution",
-      "ordinal": 12,
+      "phase": "development",
+      "ordinal": 16,
       "actor": "claude_code",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/80-codex-review-r2.md"}],
-      "outputs": [{"path": "handoffs/90-claude-final.md", "required_sections": ["## Changes Made", "## Files Changed", "## Tests Run"]}],
-      "next": ["integrate_merge_cleanup"],
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "verification-before-completion"
+      ],
+      "output_summary": [
+        "final code revision",
+        "final verification report"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/80-codex-review-r2.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/90-claude-final.md",
+          "required_sections": [
+            "## Changes Made",
+            "## Files Changed",
+            "## Tests Run"
+          ]
+        }
+      ],
+      "next": [
+        "integrate_and_verify"
+      ],
       "gate": null
     },
     {
-      "id": "integrate_merge_cleanup",
-      "name": "Integrate, Merge, and Clean Up",
-      "phase": "integration_cleanup",
-      "ordinal": 13,
+      "id": "integrate_and_verify",
+      "name": "Integrate and Verify",
+      "phase": "packaging",
+      "ordinal": 17,
       "actor": "human",
-      "step_type": "human_gate",
-      "inputs": [{"path": "handoffs/90-claude-final.md"}],
-      "outputs": [{"path": "handoffs/95-integration-checklist.md", "checklist_must_complete": true}],
-      "next": ["next_cycle"],
-      "gate": {"type": "checklist_gate", "all_items_checked": true}
+      "step_type": "script",
+      "recommended_skills": [
+        "verification-before-completion"
+      ],
+      "output_summary": [
+        "integration checklist",
+        "final verification evidence"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/90-claude-final.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/95-integration-checklist.md",
+          "checklist_must_complete": true
+        }
+      ],
+      "next": [
+        "prepare_release_package"
+      ],
+      "gate": {
+        "type": "checklist_gate",
+        "all_items_checked": true
+      }
     },
     {
-      "id": "next_cycle",
-      "name": "Reflect and Define Next Cycle",
-      "phase": "integration_cleanup",
-      "ordinal": 14,
+      "id": "prepare_release_package",
+      "name": "Prepare Release Package",
+      "phase": "packaging",
+      "ordinal": 18,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [
+        "product-readme"
+      ],
+      "output_summary": [
+        "release notes",
+        "demo assets",
+        "delivery package"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/95-integration-checklist.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/96-release-package.md",
+          "required_sections": [
+            "## Delivery Surface",
+            "## Release Notes",
+            "## Demo Assets",
+            "## Outstanding Follow-Ups"
+          ]
+        }
+      ],
+      "next": [
+        "delivery_approval_gate"
+      ],
+      "gate": null
+    },
+    {
+      "id": "delivery_approval_gate",
+      "name": "Delivery Approval Gate",
+      "phase": "packaging",
+      "ordinal": 19,
       "actor": "human",
-      "step_type": "llm",
-      "inputs": [{"path": "handoffs/95-integration-checklist.md"}],
-      "outputs": [{"path": "handoffs/99-next-cycle.md"}],
+      "step_type": "human_approval_gate",
+      "recommended_skills": [],
+      "output_summary": [
+        "approved delivery package",
+        "approved release decision"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/96-release-package.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/97-delivery-approval.md",
+          "required_frontmatter": {
+            "author": "human",
+            "status": "approved"
+          }
+        }
+      ],
+      "next": [
+        "capture_next_cycle"
+      ],
+      "gate": {
+        "type": "human_approval",
+        "check_field": "status",
+        "required_value": "approved",
+        "check_author": "human"
+      }
+    },
+    {
+      "id": "capture_next_cycle",
+      "name": "Capture Next Cycle",
+      "phase": "maintenance",
+      "ordinal": 20,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "next cycle brief",
+        "future spec candidates"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/97-delivery-approval.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/99-next-cycle.md",
+          "required_sections": [
+            "## Architectural Debt",
+            "## Deferred Cleanup",
+            "## Polish Opportunities",
+            "## Next Candidate"
+          ]
+        }
+      ],
+      "next": [
+        "update_backlog_and_debt"
+      ],
+      "gate": null
+    },
+    {
+      "id": "update_backlog_and_debt",
+      "name": "Update Backlog and Debt",
+      "phase": "maintenance",
+      "ordinal": 21,
+      "actor": "codex",
+      "step_type": "ai_routing",
+      "recommended_skills": [],
+      "output_summary": [
+        "backlog updates",
+        "debt ledger"
+      ],
+      "inputs": [
+        {
+          "path": "handoffs/99-next-cycle.md"
+        }
+      ],
+      "outputs": [
+        {
+          "path": "handoffs/100-backlog-and-debt.md",
+          "required_sections": [
+            "## Immediate Follow-Ups",
+            "## Deferred Debt",
+            "## Candidate Specs"
+          ]
+        }
+      ],
       "next": [],
       "gate": null
     }
   ],
   "round_limits": {
-    "small": {"max_review_rounds": 2, "max_revision_rounds": 1},
-    "medium": {"max_review_rounds": 4, "max_revision_rounds": 2},
-    "large": {"max_review_rounds": 6, "max_revision_rounds": 3}
+    "small": {
+      "max_review_rounds": 2,
+      "max_revision_rounds": 1
+    },
+    "medium": {
+      "max_review_rounds": 4,
+      "max_revision_rounds": 2
+    },
+    "large": {
+      "max_review_rounds": 6,
+      "max_revision_rounds": 3
+    }
   },
   "template_markers": [
-    "{{TASK_ID}}", "{{DATE}}", "{{SHORT_NAME}}", "{{FEATURE_NAME}}",
-    "{{REPO_PATH}}", "<!-- TODO", "_Replace this"
+    "{{TASK_ID}}",
+    "{{DATE}}",
+    "{{SHORT_NAME}}",
+    "{{FEATURE_NAME}}",
+    "{{REPO_PATH}}",
+    "<!-- TODO",
+    "_Replace this"
   ]
 }

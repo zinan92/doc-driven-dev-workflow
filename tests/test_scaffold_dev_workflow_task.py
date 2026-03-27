@@ -69,7 +69,7 @@ class ScaffoldTaskTests(unittest.TestCase):
             self.assertEqual(state["task_id"], task_id)
             self.assertEqual(state["current_actor"], "codex")
             self.assertEqual(state["stage"], "clarify_objective")
-            self.assertEqual(state["current_phase"], "intention_framing")
+            self.assertEqual(state["current_phase"], "research")
 
             run_log = (task_dir / "system" / "run-log.jsonl").read_text().strip().splitlines()
             self.assertEqual(len(run_log), 1)

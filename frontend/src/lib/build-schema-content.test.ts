@@ -17,9 +17,9 @@ test("returns step contract for known stage", () => {
   expect(content).toContain("acceptance criteria");
 });
 
-test("returns step contract for human_approval_gate", () => {
+test("returns step contract for design_approval_gate", () => {
   const content = buildSchemaContent({
-    id: "human_approval_gate",
+    id: "design_approval_gate",
     inputs: [],
     outputs: [],
     validation: [],
@@ -27,7 +27,7 @@ test("returns step contract for human_approval_gate", () => {
     next: [],
   });
 
-  expect(content).toContain("human_gate");
+  expect(content).toContain("human_approval_gate");
   expect(content).toContain("allowed_decisions:");
   expect(content).toContain("approved");
 });

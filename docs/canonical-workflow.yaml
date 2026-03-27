@@ -2,230 +2,292 @@
 # This file is a human-readable mirror of canonical-workflow.json.
 # Do NOT parse this file in scripts. The JSON is the authoritative source of truth.
 
-version: "1.0"
+version: "2.0"
 
-# ─────────────────────────────────────────────
-# PHASES OVERVIEW
-# ─────────────────────────────────────────────
-# Phase 1: intention_framing    — stages 0–1
-# Phase 2: document_authoring   — stages 2–8
-# Phase 3: code_execution       — stages 9–12
-# Phase 4: integration_cleanup  — stages 13–14
+phases:
+  - id: research
+    name: Research
+    subtitle: Anchor the idea to real products before deeper design starts.
+    stage_ids:
+      - clarify_objective
+      - classify_task
+      - product_research
+      - collect_reference_evidence
+      - research_approval_gate
+
+  - id: design
+    name: Design
+    subtitle: Turn the anchored idea into PRD, flow, prototype brief, and execution plan.
+    stage_ids:
+      - draft_prd
+      - prd_reality_review
+      - draft_user_flow
+      - draft_prototype_brief
+      - design_approval_gate
+      - draft_implementation_plan
+      - review_implementation_plan
+      - write_execution_prompt
+
+  - id: development
+    name: Development
+    subtitle: Implement, review, gate, and finalize in bounded batches.
+    stage_ids:
+      - claude_code_batch_execution
+      - codex_reviews_batch
+      - gate_major_phase
+      - final_revision
+
+  - id: packaging
+    name: Packaging
+    subtitle: Turn working code into a clean deliverable with explicit release artifacts.
+    stage_ids:
+      - integrate_and_verify
+      - prepare_release_package
+      - delivery_approval_gate
+
+  - id: maintenance
+    name: Maintenance
+    subtitle: Capture learnings, debt, and the next cycle after delivery.
+    stage_ids:
+      - capture_next_cycle
+      - update_backlog_and_debt
 
 stages:
-
-  # ── PHASE 1: intention_framing ─────────────
-
   - ordinal: 0
     id: clarify_objective
-    name: "Clarify Objective"
+    name: Clarify Objective
+    phase: research
     actor: codex
-    step_type: llm
+    step_type: ai_routing
+    recommended_skills: [clarify-intention]
+    output_summary: [clear objective, success condition, scope boundary]
     outputs:
-      - handoffs/00-intake.md
-        # required_sections: Objective, Success Condition, Scope Boundary
-    notes: >
-      If objective is ambiguous, agent must ask human and stop.
+      - path: handoffs/00-intake.md
 
   - ordinal: 1
     id: classify_task
-    name: "Classify Task & Estimate Size"
+    name: Classify Task and Estimate Size
+    phase: research
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/00-intake.md
+    step_type: ai_routing
+    output_summary: [task type, task size, estimate summary]
     outputs:
-      - handoffs/05-task-classification.yaml
-        # required_keys: task_type, task_size
-        # task_type values: feature | new_project | bug_fix | optimization
-        # task_size values: small | medium | large
-      - handoffs/08-scope-estimate.md
-        # required_sections: Estimated Size, Estimate Summary
-
-  # ── PHASE 2: document_authoring ────────────
+      - path: handoffs/05-task-classification.yaml
+      - path: handoffs/08-scope-estimate.md
 
   - ordinal: 2
-    id: draft_prd
-    name: "Draft PRD"
+    id: product_research
+    name: Run Product Research
+    phase: research
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/00-intake.md
-      - handoffs/05-task-classification.yaml
+    step_type: ai_routing
+    recommended_skills: [product-research]
+    output_summary: [primary anchor, secondary anchor, similarity note]
     outputs:
-      - handoffs/10-prd.md
-        # required_sections: Purpose, Scope, Non-Goals, Contracts,
-        #   Expected Behavior, Acceptance Criteria, Constraints, Terminology
+      - path: handoffs/09-product-research.md
 
   - ordinal: 3
-    id: prd_reality_review
-    name: "Review PRD Against Reality"
+    id: collect_reference_evidence
+    name: Collect Reference Evidence
+    phase: research
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/10-prd.md
+    step_type: ai_routing
+    recommended_skills: [product-research]
+    output_summary: [key page screenshots, key flow screenshots, evidence links]
     outputs:
-      - handoffs/15-prd-reality-review.md
-        # required_sections: Corrections, Baseline Assumptions
+      - path: handoffs/09-reference-evidence.md
 
   - ordinal: 4
-    id: draft_user_flow
-    name: "Draft User Flow"
-    actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/10-prd.md
-      - handoffs/15-prd-reality-review.md
+    id: research_approval_gate
+    name: Research Approval Gate
+    phase: research
+    actor: human
+    step_type: human_approval_gate
+    output_summary: [approved product anchors, approved evidence set]
     outputs:
-      - handoffs/20-user-flow.md
-        # required_sections: Entry Point, Steps, Completion
-      - handoffs/21-user-flow.yaml
-        # required_keys: steps
-        # each step requires: inputs, outputs, validation, failure, next
+      - path: handoffs/09-research-approval.md
 
   - ordinal: 5
-    id: human_approval_gate
-    name: "Human Approval Gate"
-    actor: human
-    step_type: human_gate
-    inputs:
-      - handoffs/10-prd.md
-      - handoffs/20-user-flow.md
-      - handoffs/21-user-flow.yaml
+    id: draft_prd
+    name: Draft PRD
+    phase: design
+    actor: codex
+    step_type: ai_routing
+    recommended_skills: [brainstorming]
+    output_summary: [purpose, scope, acceptance criteria]
     outputs:
-      - handoffs/25-human-approval.md
-        # required_frontmatter: author=human, status=approved
-    gate:
-      type: human_approval
-      check_field: status
-      required_value: approved
-      check_author: human
+      - path: handoffs/10-prd.md
 
   - ordinal: 6
-    id: draft_implementation_plan
-    name: "Draft Implementation Plan"
+    id: prd_reality_review
+    name: Review PRD Against Reality
+    phase: design
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/10-prd.md
-      - handoffs/20-user-flow.md
-      - handoffs/25-human-approval.md
+    step_type: ai_routing
+    output_summary: [corrected PRD assumptions, resolved contradictions]
     outputs:
-      - handoffs/30-implementation-plan.md
-        # required_sections: Phases, Verification, Stop Conditions
-      - handoffs/32-execution-workflow.yaml
+      - path: handoffs/15-prd-reality-review.md
 
   - ordinal: 7
-    id: review_implementation_plan
-    name: "Review Implementation Plan"
+    id: draft_user_flow
+    name: Draft User Flow
+    phase: design
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/30-implementation-plan.md
-      - handoffs/32-execution-workflow.yaml
+    step_type: ai_routing
+    output_summary: [human-readable flow, structured flow yaml]
     outputs:
-      - handoffs/35-plan-review.md
-        # required_sections: Reviewed Plan, Clarified Execution Order
+      - path: handoffs/20-user-flow.md
+      - path: handoffs/21-user-flow.yaml
 
   - ordinal: 8
-    id: write_execution_prompt
-    name: "Write Execution Prompt"
+    id: draft_prototype_brief
+    name: Draft Prototype Brief
+    phase: design
     actor: codex
-    step_type: llm
-    inputs:
-      - handoffs/30-implementation-plan.md
-      - handoffs/35-plan-review.md
+    step_type: ai_routing
+    recommended_skills: [ui-ux-pro-max]
+    output_summary: [prototype direction, key screens, interaction notes]
     outputs:
-      - handoffs/40-execution-prompt.md
-        # required_sections: Repository, Execution Order, Stop Conditions,
-        #   Forbidden Behaviors
-
-  # ── PHASE 3: code_execution ────────────────
+      - path: handoffs/22-prototype-brief.md
 
   - ordinal: 9
-    id: claude_code_batch_execution
-    name: "Claude Code Executes in Batches"
-    actor: claude_code
-    step_type: llm
-    inputs:
-      - handoffs/40-execution-prompt.md
+    id: design_approval_gate
+    name: Design Approval Gate
+    phase: design
+    actor: human
+    step_type: human_approval_gate
+    output_summary: [approved PRD, approved user flow, approved prototype brief]
     outputs:
-      - "handoffs/50-claude-batch-r{round}.md"
-        # required_sections: Tasks Completed, Files Changed, Tests Run,
-        #   Result, Next Proposed Batch
-    notes: >
-      Round-numbered output. Must not implement all at once for
-      medium/large tasks.
+      - path: handoffs/25-human-approval.md
 
   - ordinal: 10
-    id: codex_reviews_batch
-    name: "Codex Reviews Each Batch"
+    id: draft_implementation_plan
+    name: Draft Implementation Plan
+    phase: design
     actor: codex
-    step_type: llm
-    inputs:
-      - "handoffs/50-claude-batch-r{round}.md"
+    step_type: ai_routing
+    recommended_skills: [writing-plans]
+    output_summary: [phase plan, verification plan, execution workflow]
     outputs:
-      - "handoffs/60-codex-review-r{round}.md"
-        # required_sections: Findings, Required Changes, Gate Decision
-        # Gate Decision enum: proceed | fix_before_proceeding | stop_and_rethink
-    gate:
-      type: review_gate
-      decision_field: "## Gate Decision"
-      on_proceed: final_revision
-      on_fix: claude_code_batch_execution
-      on_stop: blocked
-    notes: Next stage depends on gate decision and round number.
+      - path: handoffs/30-implementation-plan.md
+      - path: handoffs/32-execution-workflow.yaml
 
   - ordinal: 11
-    id: gate_major_phase
-    name: "Gate Each Major Phase"
+    id: review_implementation_plan
+    name: Review Implementation Plan
+    phase: design
     actor: codex
-    step_type: human_gate
-    gate:
-      type: phase_gate
-      applies_to: [medium, large]
-    notes: Only active for medium/large tasks. Small tasks skip this.
+    step_type: ai_routing
+    recommended_skills: [writing-plans]
+    output_summary: [reviewed plan, clarified execution order]
+    outputs:
+      - path: handoffs/35-plan-review.md
 
   - ordinal: 12
-    id: final_revision
-    name: "Final Revision"
-    actor: claude_code
-    step_type: llm
-    inputs:
-      - handoffs/80-codex-review-r2.md
+    id: write_execution_prompt
+    name: Write Execution Prompt
+    phase: design
+    actor: codex
+    step_type: ai_routing
+    output_summary: [formal execution handoff, source of truth rules]
     outputs:
-      - handoffs/90-claude-final.md
-        # required_sections: Changes Made, Files Changed, Tests Run
-
-  # ── PHASE 4: integration_cleanup ───────────
+      - path: handoffs/40-execution-prompt.md
 
   - ordinal: 13
-    id: integrate_merge_cleanup
-    name: "Integrate, Merge, and Clean Up"
-    actor: human
-    step_type: human_gate
-    inputs:
-      - handoffs/90-claude-final.md
+    id: claude_code_batch_execution
+    name: Claude Code Executes in Batches
+    phase: development
+    actor: claude_code
+    step_type: ai_routing
+    recommended_skills: [test-driven-development]
+    output_summary: [batch implementation, batch report, tests run]
     outputs:
-      - handoffs/95-integration-checklist.md
-        # checklist_must_complete: true
-    gate:
-      type: checklist_gate
-      all_items_checked: true
+      - path: handoffs/50-claude-batch-r{round}.md
 
   - ordinal: 14
-    id: next_cycle
-    name: "Reflect and Define Next Cycle"
-    actor: human
-    step_type: llm
-    inputs:
-      - handoffs/95-integration-checklist.md
+    id: codex_reviews_batch
+    name: Codex Reviews Each Batch
+    phase: development
+    actor: codex
+    step_type: ai_routing
+    recommended_skills: [requesting-code-review]
+    output_summary: [findings, required changes, gate decision]
     outputs:
-      - handoffs/99-next-cycle.md
+      - path: handoffs/60-codex-review-r{round}.md
 
-# ─────────────────────────────────────────────
-# ROUND LIMITS BY TASK SIZE
-# ─────────────────────────────────────────────
+  - ordinal: 15
+    id: gate_major_phase
+    name: Gate Each Major Phase
+    phase: development
+    actor: human
+    step_type: human_approval_gate
+    output_summary: [phase gate decision, upstream contract confirmation]
+    outputs:
+      - path: handoffs/85-phase-gate.md
+
+  - ordinal: 16
+    id: final_revision
+    name: Final Revision
+    phase: development
+    actor: claude_code
+    step_type: ai_routing
+    recommended_skills: [verification-before-completion]
+    output_summary: [final code revision, final verification report]
+    outputs:
+      - path: handoffs/90-claude-final.md
+
+  - ordinal: 17
+    id: integrate_and_verify
+    name: Integrate and Verify
+    phase: packaging
+    actor: human
+    step_type: script
+    recommended_skills: [verification-before-completion]
+    output_summary: [integration checklist, final verification evidence]
+    outputs:
+      - path: handoffs/95-integration-checklist.md
+
+  - ordinal: 18
+    id: prepare_release_package
+    name: Prepare Release Package
+    phase: packaging
+    actor: codex
+    step_type: ai_routing
+    recommended_skills: [product-readme]
+    output_summary: [release notes, demo assets, delivery package]
+    outputs:
+      - path: handoffs/96-release-package.md
+
+  - ordinal: 19
+    id: delivery_approval_gate
+    name: Delivery Approval Gate
+    phase: packaging
+    actor: human
+    step_type: human_approval_gate
+    output_summary: [approved delivery package, approved release decision]
+    outputs:
+      - path: handoffs/97-delivery-approval.md
+
+  - ordinal: 20
+    id: capture_next_cycle
+    name: Capture Next Cycle
+    phase: maintenance
+    actor: codex
+    step_type: ai_routing
+    output_summary: [next cycle brief, future spec candidates]
+    outputs:
+      - path: handoffs/99-next-cycle.md
+
+  - ordinal: 21
+    id: update_backlog_and_debt
+    name: Update Backlog and Debt
+    phase: maintenance
+    actor: codex
+    step_type: ai_routing
+    output_summary: [backlog updates, debt ledger]
+    outputs:
+      - path: handoffs/100-backlog-and-debt.md
+
 round_limits:
   small:
     max_review_rounds: 2
@@ -237,9 +299,6 @@ round_limits:
     max_review_rounds: 6
     max_revision_rounds: 3
 
-# ─────────────────────────────────────────────
-# TEMPLATE MARKERS (unfilled template detection)
-# ─────────────────────────────────────────────
 template_markers:
   - "{{TASK_ID}}"
   - "{{DATE}}"

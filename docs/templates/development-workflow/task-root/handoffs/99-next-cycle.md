@@ -1,10 +1,10 @@
 ---
 task_id: "{{TASK_ID}}"
 author: codex
-role: planner
-stage: next_cycle
+role: strategist
+stage: capture_next_cycle
 status: draft
-next_actor: human
+next_actor: codex
 ---
 
 # Next Cycle
@@ -24,6 +24,6 @@ next_actor: human
 - {{POLISH_1}}
 - {{POLISH_2}}
 
-## Next Spec Candidate
+## Next Candidate
 
-{{NEXT_SPEC_CANDIDATE}}
+{{NEXT_CANDIDATE}}

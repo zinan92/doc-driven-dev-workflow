@@ -23,7 +23,7 @@ npm run dev          # start dev server
 ## Architecture
 
 - `scripts/build-example-task.ts` — reads `examples/example-task/` artifacts, emits `src/data/example-task.json`
-- `src/data/canonical-stages.ts` — the 15-stage canonical workflow definition
+- `src/data/canonical-stages.ts` — the 22-stage canonical workflow definition
 - `src/lib/map-artifacts-to-stages.ts` — maps handoff artifacts to canonical stages
 - `src/lib/build-replay-snapshots.ts` — builds replayable state from run-log events
 - `src/components/` — UI panels (summary bar, workflow graph, step detail, artifact preview, timeline)
@@ -34,4 +34,4 @@ npm run dev          # start dev server
 - Single example task only
 - Read-only, no mutations
 - Manual replay via timeline clicks
-- All 15 canonical stages rendered even when the example task has fewer artifacts
+- All 22 canonical stages rendered even when the example task has fewer artifacts

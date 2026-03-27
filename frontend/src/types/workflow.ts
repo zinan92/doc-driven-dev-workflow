@@ -1,20 +1,24 @@
 export type Actor = "human" | "codex" | "claude_code";
 export type NodeStatus = "not_reached" | "selected" | "completed" | "waiting" | "blocked";
 export type TaskStatus = "active" | "waiting" | "done" | "blocked";
-export type StepType = "llm" | "script" | "human_gate";
+export type StepType = "ai_routing" | "script" | "human_approval_gate";
 export type WorkflowPhase =
-  | "intention_framing"
-  | "document_authoring"
-  | "code_execution"
-  | "integration_cleanup";
+  | "research"
+  | "design"
+  | "development"
+  | "packaging"
+  | "maintenance";
 
 export interface CanonicalStage {
   readonly id: string;
   readonly index: number;
   readonly title: string;
+  readonly phaseId: WorkflowPhase;
   readonly actor: Actor;
   readonly stepType: StepType;
   readonly purpose: string;
+  readonly outputSummary: readonly string[];
+  readonly recommendedSkills: readonly string[];
   readonly canonicalInputs: readonly string[];
   readonly canonicalOutputs: readonly string[];
 }
@@ -23,9 +27,12 @@ export interface WorkflowStep {
   readonly id: string;
   readonly index: number;
   readonly title: string;
+  readonly phaseId: WorkflowPhase;
   readonly actor: Actor;
   readonly stepType: StepType;
   readonly purpose: string;
+  readonly outputSummary: readonly string[];
+  readonly recommendedSkills: readonly string[];
   readonly status: NodeStatus;
   readonly inputs: readonly string[];
   readonly outputs: readonly string[];

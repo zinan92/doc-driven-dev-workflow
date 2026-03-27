@@ -8,7 +8,7 @@ test("shows actor, step type, inputs, outputs, and next step", () => {
         id: "draft_prd",
         title: "Draft PRD",
         actor: "codex",
-        stepType: "llm",
+        stepType: "ai_routing",
         purpose: "Draft the PRD",
         inputs: ["handoffs/00-intake.md"],
         outputs: ["handoffs/10-prd.md"],

@@ -37,10 +37,64 @@ flowchart LR
     D --> E[Maintenance 维护]
 ```
 
-它和当前仓库里的 15-stage canonical workflow 不是冲突关系，而是上下两层：
+它和当前仓库里的 canonical workflow 不是冲突关系，而是上下两层：
 
 - `Build Anything` 5-phase 是完整产品生命周期
-- 15-stage canonical workflow 是当前仓库已经落地并可被脚本约束的执行层
+- canonical workflow 是当前仓库已经落地并可被脚本约束的执行层
+
+当前 canonical workflow 已升级为：
+
+- `5` 个 phase
+- `22` 个 stage
+- 每个 stage 都带有 `execution mode`、`outputs` 和 `recommended skills`
+
+## Build Anything Diagram
+
+图例：
+
+- `AI` = `ai_routing`
+- `SCR` = `script`
+- `GATE` = `human_approval_gate`
+
+```mermaid
+flowchart LR
+  subgraph P1[Phase 1: Research]
+    R0["0 Clarify Objective\nAI | 00-intake\nclarify-intention"] --> R1["1 Classify Task\nAI | 05/08\nnone"]
+    R1 --> R2["2 Product Research\nAI | 09-product-research\nproduct-research"]
+    R2 --> R3["3 Reference Evidence\nAI | 09-reference-evidence\nproduct-research"]
+    R3 --> R4["4 Research Approval\nGATE | 09-research-approval\nnone"]
+  end
+
+  subgraph P2[Phase 2: Design]
+    D5["5 Draft PRD\nAI | 10-prd\nbrainstorming"] --> D6["6 PRD Reality Review\nAI | 15-review\nnone"]
+    D6 --> D7["7 Draft User Flow\nAI | 20/21-user-flow\nnone"]
+    D7 --> D8["8 Prototype Brief\nAI | 22-prototype-brief\nui-ux-pro-max"]
+    D8 --> D9["9 Design Approval\nGATE | 25-human-approval\nnone"]
+    D9 --> D10["10 Implementation Plan\nAI | 30/32-plan\nwriting-plans"]
+    D10 --> D11["11 Plan Review\nAI | 35-plan-review\nwriting-plans"]
+    D11 --> D12["12 Execution Prompt\nAI | 40-execution-prompt\nnone"]
+  end
+
+  subgraph P3[Phase 3: Development]
+    V13["13 Batch Execution\nAI | 50/70-batch\ntest-driven-development"] --> V14["14 Batch Review\nAI | 60/80-review\nrequesting-code-review"]
+    V14 --> V15["15 Major Phase Gate\nGATE | 85-phase-gate\nnone"]
+    V15 --> V16["16 Final Revision\nAI | 90-claude-final\nverification-before-completion"]
+  end
+
+  subgraph P4[Phase 4: Packaging]
+    K17["17 Integrate and Verify\nSCR | 95-checklist\nverification-before-completion"] --> K18["18 Release Package\nAI | 96-release-package\nproduct-readme"]
+    K18 --> K19["19 Delivery Approval\nGATE | 97-delivery-approval\nnone"]
+  end
+
+  subgraph P5[Phase 5: Maintenance]
+    M20["20 Capture Next Cycle\nAI | 99-next-cycle\nnone"] --> M21["21 Backlog and Debt\nAI | 100-backlog-and-debt\nnone"]
+  end
+
+  R4 --> D5
+  D12 --> V13
+  V16 --> K17
+  K19 --> M20
+```
 
 每个 phase 的建议输出如下：
 
@@ -56,6 +110,33 @@ flowchart LR
 
 - `docs/build-anything-workflow.md`
 - `docs/development-workflow.md`
+
+## Stage Manifest
+
+| # | Phase | Stage | Mode | Main outputs | Recommended skills |
+|---|-------|-------|------|--------------|--------------------|
+| 0 | Research | Clarify Objective | AI | `handoffs/00-intake.md` | `clarify-intention` |
+| 1 | Research | Classify Task and Estimate Size | AI | `handoffs/05-task-classification.yaml`, `handoffs/08-scope-estimate.md` | none |
+| 2 | Research | Run Product Research | AI | `handoffs/09-product-research.md` | `product-research` |
+| 3 | Research | Collect Reference Evidence | AI | `handoffs/09-reference-evidence.md` | `product-research` |
+| 4 | Research | Research Approval Gate | GATE | `handoffs/09-research-approval.md` | none |
+| 5 | Design | Draft PRD | AI | `handoffs/10-prd.md` | `brainstorming` |
+| 6 | Design | Review PRD Against Reality | AI | `handoffs/15-prd-reality-review.md` | none |
+| 7 | Design | Draft User Flow | AI | `handoffs/20-user-flow.md`, `handoffs/21-user-flow.yaml` | none |
+| 8 | Design | Draft Prototype Brief | AI | `handoffs/22-prototype-brief.md` | `ui-ux-pro-max` |
+| 9 | Design | Design Approval Gate | GATE | `handoffs/25-human-approval.md` | none |
+| 10 | Design | Draft Implementation Plan | AI | `handoffs/30-implementation-plan.md`, `handoffs/32-execution-workflow.yaml` | `writing-plans` |
+| 11 | Design | Review Implementation Plan | AI | `handoffs/35-plan-review.md` | `writing-plans` |
+| 12 | Design | Write Execution Prompt | AI | `handoffs/40-execution-prompt.md` | none |
+| 13 | Development | Claude Code Executes in Batches | AI | `handoffs/50-claude-batch-r{n}.md` | `test-driven-development` |
+| 14 | Development | Codex Reviews Each Batch | AI | `handoffs/60-codex-review-r{n}.md` | `requesting-code-review` |
+| 15 | Development | Gate Each Major Phase | GATE | `handoffs/85-phase-gate.md` | none |
+| 16 | Development | Final Revision | AI | `handoffs/90-claude-final.md` | `verification-before-completion` |
+| 17 | Packaging | Integrate and Verify | SCR | `handoffs/95-integration-checklist.md` | `verification-before-completion` |
+| 18 | Packaging | Prepare Release Package | AI | `handoffs/96-release-package.md` | `product-readme` |
+| 19 | Packaging | Delivery Approval Gate | GATE | `handoffs/97-delivery-approval.md` | none |
+| 20 | Maintenance | Capture Next Cycle | AI | `handoffs/99-next-cycle.md` | none |
+| 21 | Maintenance | Update Backlog and Debt | AI | `handoffs/100-backlog-and-debt.md` | none |
 
 ## 架构
 
@@ -233,7 +314,7 @@ doc-driven-dev-workflow/
 当前原型支持：
 
 - 左侧 `Task Rail` 浏览 repo-local workflow snapshots
-- 中间 `Workflow Canvas` 按 4 个 canonical enforcement phases 展示完整 15-stage workflow；这是 Build Anything 5-phase 生命周期中的执行层
+- 中间 `Workflow Canvas` 按 5 个 canonical phases 展示完整 22-stage workflow；这是 Build Anything 生命周期的执行层
 - 右侧 `Inspector` 查看 step detail、artifacts、working folder 和 context
 - 基于本地 snapshots 的手动 replay
 - 通过 writer scripts 接入真实任务状态

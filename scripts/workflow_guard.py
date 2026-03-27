@@ -28,12 +28,25 @@ def load_canonical_workflow(
     for stage in raw.get("stages", []):
         stages_by_id[stage["id"]] = stage
 
+    phases_by_id = {phase["id"]: phase for phase in raw.get("phases", [])}
     return {
+        "phases": phases_by_id,
         "stages": stages_by_id,
         "stages_ordered": [s["id"] for s in raw.get("stages", [])],
         "round_limits": raw.get("round_limits", {}),
         "template_markers": raw.get("template_markers", []),
     }
+
+
+def resolve_stage_phase(
+    workflow: dict[str, Any],
+    stage_id: str,
+    default: str | None = None,
+) -> str | None:
+    stage_def = workflow["stages"].get(stage_id)
+    if stage_def is None:
+        return default
+    return stage_def.get("phase", default)
 
 
 def validate_transition(
@@ -132,6 +145,13 @@ def check_human_gate(approval_path: Path) -> None:
         )
 
 
+APPROVAL_PATH_BY_TARGET = {
+    "draft_prd": "handoffs/09-research-approval.md",
+    "draft_implementation_plan": "handoffs/25-human-approval.md",
+    "capture_next_cycle": "handoffs/97-delivery-approval.md",
+}
+
+
 def _extract_frontmatter(content: str) -> dict[str, str]:
     result: dict[str, str] = {}
     lines = content.strip().splitlines()
@@ -214,9 +234,10 @@ def guard_transition(
     except GuardError as e:
         errors.append(str(e))
 
-    if target_stage == "draft_implementation_plan":
+    approval_rel = APPROVAL_PATH_BY_TARGET.get(target_stage)
+    if approval_rel:
         try:
-            approval_path = task_dir / "handoffs" / "25-human-approval.md"
+            approval_path = task_dir / approval_rel
             check_human_gate(approval_path)
         except GuardError as e:
             errors.append(str(e))

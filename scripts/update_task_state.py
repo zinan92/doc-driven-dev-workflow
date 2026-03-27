@@ -10,30 +10,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from workflow_guard import load_canonical_workflow, guard_transition
-
-
-PHASE_BY_STAGE = {
-    "clarify_objective": "intention_framing",
-    "classify_task": "intention_framing",
-    "draft_prd": "document_authoring",
-    "prd_reality_review": "document_authoring",
-    "draft_user_flow": "document_authoring",
-    "human_approval_gate": "document_authoring",
-    "draft_implementation_plan": "document_authoring",
-    "review_implementation_plan": "document_authoring",
-    "write_execution_prompt": "document_authoring",
-    "claude_code_batch_execution": "code_execution",
-    "codex_reviews_batch": "code_execution",
-    "gate_major_phase": "code_execution",
-    "final_revision": "code_execution",
-    "integrate_merge_cleanup": "integration_cleanup",
-    "next_cycle": "integration_cleanup",
-}
+from workflow_guard import load_canonical_workflow, guard_transition, resolve_stage_phase
 
 
 def iso_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _default_phase() -> str:
+    return "maintenance"
 
 
 def _read_task_size(task_dir: Path) -> str | None:
@@ -62,6 +47,7 @@ def update_task_state(
 ) -> dict[str, object]:
     state_path = task_dir / "system" / "state.json"
     state = json.loads(state_path.read_text())
+    workflow = load_canonical_workflow()
 
     # --- ENFORCEMENT LAYER ---
     if enforce and stage is not None and stage != state.get("stage"):
@@ -70,7 +56,6 @@ def update_task_state(
         task_size = _read_task_size(task_dir)
         r = round if round is not None else state.get("round", 0)
 
-        workflow = load_canonical_workflow()
         errors = guard_transition(
             workflow, task_dir,
             current_stage=current_stage,
@@ -89,9 +74,9 @@ def update_task_state(
         state["status"] = status
     if stage is not None:
         state["stage"] = stage
-        state["current_phase"] = PHASE_BY_STAGE.get(stage, state.get("current_phase", "integration_cleanup"))
+        state["current_phase"] = resolve_stage_phase(workflow, stage, state.get("current_phase", _default_phase()))
     elif "current_phase" not in state:
-        state["current_phase"] = PHASE_BY_STAGE.get(state.get("stage"), "integration_cleanup")
+        state["current_phase"] = resolve_stage_phase(workflow, state.get("stage"), _default_phase())
     if current_actor is not None:
         state["current_actor"] = current_actor
     if round is not None:

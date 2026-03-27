@@ -101,7 +101,7 @@ def scaffold_task(
                 "timestamp": f"{current_date}T00:00:00Z",
                 "event": "task_created",
                 "task_id": state["task_id"],
-                "phase": state.get("current_phase", "intention_framing"),
+                "phase": state.get("current_phase", "research"),
                 "stage": state["stage"],
                 "actor": state["current_actor"],
                 "artifact": state["last_artifact"],

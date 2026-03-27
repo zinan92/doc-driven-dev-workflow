@@ -14,11 +14,15 @@ const HANDOFF_TO_STAGE: readonly [string, string][] = [
   ["00-intake", "clarify_objective"],
   ["05-task-classification", "classify_task"],
   ["08-scope-estimate", "classify_task"],
+  ["09-product-research", "product_research"],
+  ["09-reference-evidence", "collect_reference_evidence"],
+  ["09-research-approval", "research_approval_gate"],
   ["10-prd", "draft_prd"],
   ["15-prd-reality-review", "prd_reality_review"],
   ["20-user-flow", "draft_user_flow"],
   ["21-user-flow", "draft_user_flow"],
-  ["25-human-approval", "human_approval_gate"],
+  ["22-prototype-brief", "draft_prototype_brief"],
+  ["25-human-approval", "design_approval_gate"],
   ["30-implementation-plan", "draft_implementation_plan"],
   ["32-execution-workflow", "write_execution_prompt"],
   ["35-plan-review", "review_implementation_plan"],
@@ -27,9 +31,13 @@ const HANDOFF_TO_STAGE: readonly [string, string][] = [
   ["60-codex-review-r1", "codex_reviews_batch"],
   ["70-claude-batch-r2", "claude_code_batch_execution"],
   ["80-codex-review-r2", "codex_reviews_batch"],
+  ["85-phase-gate", "gate_major_phase"],
   ["90-claude-final", "final_revision"],
-  ["95-integration-checklist", "integrate_merge_cleanup"],
-  ["99-next-cycle", "next_cycle"],
+  ["95-integration-checklist", "integrate_and_verify"],
+  ["96-release-package", "prepare_release_package"],
+  ["97-delivery-approval", "delivery_approval_gate"],
+  ["99-next-cycle", "capture_next_cycle"],
+  ["100-backlog-and-debt", "update_backlog_and_debt"],
 ];
 
 /** Map run-log event names to canonical stage ids */
@@ -37,7 +45,7 @@ const RUN_LOG_EVENT_TO_STAGE: Record<string, string> = {
   task_created: "clarify_objective",
   prd_completed: "draft_prd",
   implementation_completed: "claude_code_batch_execution",
-  task_completed: "next_cycle",
+  task_completed: "update_backlog_and_debt",
 };
 
 function resolveStageId(filename: string): string {
@@ -147,7 +155,7 @@ export function mapRunLogToEvents(
     });
   }
 
-  // Add gate_major_phase if we have codex reviews (it has no direct artifact)
+  // Add gate_major_phase if we have codex reviews (older tasks may not have a direct artifact)
   if (seen.has("codex_reviews_batch") && !seen.has("gate_major_phase")) {
     const gateStage = CANONICAL_STAGES.find((s) => s.id === "gate_major_phase")!;
     const finalIdx = events.findIndex((e) => e.stageId === "final_revision");

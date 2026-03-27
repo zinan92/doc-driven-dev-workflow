@@ -10,21 +10,28 @@ const REPO_ROOT = join(__dirname, "../..");
 const OUTPUT = join(__dirname, "../src/data/workflow-snapshots.json");
 const DEFAULT_DISCOVERY_ROOTS = [join(REPO_ROOT, "examples"), join(REPO_ROOT, "tasks")];
 const PHASE_STAGE_MAP: Record<string, string> = {
-  clarify_objective: "intention_framing",
-  classify_task: "intention_framing",
-  draft_prd: "document_authoring",
-  prd_reality_review: "document_authoring",
-  draft_user_flow: "document_authoring",
-  human_approval_gate: "document_authoring",
-  draft_implementation_plan: "document_authoring",
-  review_implementation_plan: "document_authoring",
-  write_execution_prompt: "document_authoring",
-  claude_code_batch_execution: "code_execution",
-  codex_reviews_batch: "code_execution",
-  gate_major_phase: "code_execution",
-  final_revision: "code_execution",
-  integrate_merge_cleanup: "integration_cleanup",
-  next_cycle: "integration_cleanup",
+  clarify_objective: "research",
+  classify_task: "research",
+  product_research: "research",
+  collect_reference_evidence: "research",
+  research_approval_gate: "research",
+  draft_prd: "design",
+  prd_reality_review: "design",
+  draft_user_flow: "design",
+  draft_prototype_brief: "design",
+  design_approval_gate: "design",
+  draft_implementation_plan: "design",
+  review_implementation_plan: "design",
+  write_execution_prompt: "design",
+  claude_code_batch_execution: "development",
+  codex_reviews_batch: "development",
+  gate_major_phase: "development",
+  final_revision: "development",
+  integrate_and_verify: "packaging",
+  prepare_release_package: "packaging",
+  delivery_approval_gate: "packaging",
+  capture_next_cycle: "maintenance",
+  update_backlog_and_debt: "maintenance",
 };
 
 function readJson(path: string): unknown {
@@ -88,7 +95,7 @@ function buildSnapshot(taskDir: string) {
     current_phase:
       typeof state.stage === "string" && PHASE_STAGE_MAP[state.stage]
         ? PHASE_STAGE_MAP[state.stage]
-        : "integration_cleanup",
+        : "maintenance",
     updated_at: null,
   };
 

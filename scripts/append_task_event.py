@@ -10,26 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from workflow_guard import validate_event_consistency, GuardError
-
-
-PHASE_BY_STAGE = {
-    "clarify_objective": "intention_framing",
-    "classify_task": "intention_framing",
-    "draft_prd": "document_authoring",
-    "prd_reality_review": "document_authoring",
-    "draft_user_flow": "document_authoring",
-    "human_approval_gate": "document_authoring",
-    "draft_implementation_plan": "document_authoring",
-    "review_implementation_plan": "document_authoring",
-    "write_execution_prompt": "document_authoring",
-    "claude_code_batch_execution": "code_execution",
-    "codex_reviews_batch": "code_execution",
-    "gate_major_phase": "code_execution",
-    "final_revision": "code_execution",
-    "integrate_merge_cleanup": "integration_cleanup",
-    "next_cycle": "integration_cleanup",
-}
+from workflow_guard import validate_event_consistency, GuardError, load_canonical_workflow, resolve_stage_phase
 
 ALLOWED_EVENTS = {
     "task_created",
@@ -66,8 +47,9 @@ def append_task_event(
         raise ValueError(f"Unsupported workflow event: {event}")
 
     state = json.loads(state_path.read_text())
+    workflow = load_canonical_workflow()
     resolved_stage = stage or state.get("stage", "clarify_objective")
-    resolved_phase = phase or PHASE_BY_STAGE.get(resolved_stage) or state.get("current_phase", "integration_cleanup")
+    resolved_phase = phase or resolve_stage_phase(workflow, resolved_stage) or state.get("current_phase", "maintenance")
 
     payload = {
         "timestamp": timestamp or iso_now(),

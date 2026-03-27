@@ -42,7 +42,7 @@ export function WorkflowCanvas({ steps, selectedStepId, onSelect, stageTimestamp
                       index={step?.index ?? idx}
                       title={step?.title ?? stageId}
                       actor={step?.actor ?? "codex"}
-                      stepType={step?.stepType ?? "llm"}
+                      stepType={step?.stepType ?? "ai_routing"}
                       status={step?.status ?? "not_reached"}
                       isSelected={stageId === selectedStepId}
                       timestamp={stageTimestamps[stageId] ?? ""}

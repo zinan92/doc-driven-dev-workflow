@@ -22,6 +22,7 @@ test("derives timeline events from handoff artifacts with interpolated timestamp
     makeHandoff("15-prd-reality-review.md"),
     makeHandoff("20-user-flow.md"),
     makeHandoff("21-user-flow.yaml"),
+    makeHandoff("22-prototype-brief.md"),
     makeHandoff("25-human-approval.md", "human"),
     makeHandoff("30-implementation-plan.md"),
     makeHandoff("35-plan-review.md"),
@@ -30,9 +31,13 @@ test("derives timeline events from handoff artifacts with interpolated timestamp
     makeHandoff("60-codex-review-r1.md"),
     makeHandoff("70-claude-batch-r2.md", "claude_code"),
     makeHandoff("80-codex-review-r2.md"),
+    makeHandoff("85-phase-gate.md", "human"),
     makeHandoff("90-claude-final.md", "claude_code"),
     makeHandoff("95-integration-checklist.md", "human"),
+    makeHandoff("96-release-package.md"),
+    makeHandoff("97-delivery-approval.md", "human"),
     makeHandoff("99-next-cycle.md"),
+    makeHandoff("100-backlog-and-debt.md"),
   ];
 
   const events = mapRunLogToEvents(handoffs, RUN_LOG);
@@ -44,19 +49,19 @@ test("derives timeline events from handoff artifacts with interpolated timestamp
   const stageIds = events.map((e) => e.stageId);
   expect(stageIds).toContain("clarify_objective");
   expect(stageIds).toContain("draft_prd");
-  expect(stageIds).toContain("human_approval_gate");
+  expect(stageIds).toContain("design_approval_gate");
   expect(stageIds).toContain("claude_code_batch_execution");
   expect(stageIds).toContain("codex_reviews_batch");
   expect(stageIds).toContain("gate_major_phase");
   expect(stageIds).toContain("final_revision");
-  expect(stageIds).toContain("next_cycle");
+  expect(stageIds).toContain("update_backlog_and_debt");
 });
 
 test("anchored stages have run-log timestamps", () => {
   const handoffs: HandoffArtifact[] = [
     makeHandoff("00-intake.md", "human"),
     makeHandoff("10-prd.md"),
-    makeHandoff("99-next-cycle.md"),
+    makeHandoff("100-backlog-and-debt.md"),
   ];
 
   const events = mapRunLogToEvents(handoffs, RUN_LOG);
@@ -67,7 +72,7 @@ test("anchored stages have run-log timestamps", () => {
   const prd = events.find((e) => e.stageId === "draft_prd")!;
   expect(prd.timestamp).toBe("2026-03-15T10:10:00Z");
 
-  const next = events.find((e) => e.stageId === "next_cycle")!;
+  const next = events.find((e) => e.stageId === "update_backlog_and_debt")!;
   expect(next.timestamp).toBe("2026-03-15T11:20:00Z");
 });
 

@@ -6,7 +6,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   clarify_objective: `step_contract:
   id: clarify_objective
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - clear objective
     - clear success condition
@@ -19,7 +19,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   classify_task: `step_contract:
   id: classify_task
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - task_type: enum [feature, new_project, bug_fix, optimization]
     - task_size: enum [small, medium, large]
@@ -32,10 +32,47 @@ const STAGE_SCHEMAS: Record<string, string> = {
       - task_size is one of allowed values
       - rationale references concrete evidence`,
 
+  product_research: `step_contract:
+  id: product_research
+  actor: codex
+  step_type: ai_routing
+  required_outputs:
+    - primary anchor
+    - secondary anchor
+    - similarity note
+  validation:
+    - names concrete market-facing products
+    - avoids abstract categories
+    - design implication is explicit`,
+
+  collect_reference_evidence: `step_contract:
+  id: collect_reference_evidence
+  actor: codex
+  step_type: ai_routing
+  required_outputs:
+    - key pages
+    - key flows
+    - sources
+  validation:
+    - evidence references the chosen anchors
+    - each artifact has a clear rationale`,
+
+  research_approval_gate: `step_contract:
+  id: research_approval_gate
+  actor: human
+  step_type: human_approval_gate
+  approval_scope:
+    - product anchors
+    - screenshot evidence
+  allowed_decisions:
+    - approved
+    - revise
+    - reject`,
+
   draft_prd: `step_contract:
   id: draft_prd
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_sections:
     - purpose
     - scope
@@ -55,7 +92,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   prd_reality_review: `step_contract:
   id: prd_reality_review
   actor: codex
-  step_type: llm + script-assisted repo inspection
+  step_type: ai_routing + script-assisted repo inspection
   required_outputs:
     - corrected PRD
     - contradiction list resolved
@@ -67,7 +104,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   draft_user_flow: `step_contract:
   id: draft_user_flow
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - user-flow.md (human-readable)
     - user-flow.yaml (structured)
@@ -78,13 +115,26 @@ const STAGE_SCHEMAS: Record<string, string> = {
       - each step has: id, name, actor, step_type, goal, inputs, outputs, validation, next
       - step_type is one of: script, llm, human_gate`,
 
-  human_approval_gate: `step_contract:
-  id: human_approval_gate
+  draft_prototype_brief: `step_contract:
+  id: draft_prototype_brief
+  actor: codex
+  step_type: ai_routing
+  required_outputs:
+    - core screens
+    - key interactions
+    - visual direction
+  validation:
+    - screen list is concrete
+    - visual direction references research evidence`,
+
+  design_approval_gate: `step_contract:
+  id: design_approval_gate
   actor: human
-  step_type: human_gate
+  step_type: human_approval_gate
   approval_scope:
     - PRD
     - user flow
+    - prototype brief
   allowed_decisions:
     - approved
     - revise
@@ -96,7 +146,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   draft_implementation_plan: `step_contract:
   id: draft_implementation_plan
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - phases
     - batches
@@ -111,7 +161,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   review_implementation_plan: `step_contract:
   id: review_implementation_plan
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - reviewed plan
     - clarified execution order
@@ -124,7 +174,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   write_execution_prompt: `step_contract:
   id: write_execution_prompt
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_fields:
     - repository path
     - PRD path
@@ -142,7 +192,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   claude_code_batch_execution: `step_contract:
   id: claude_code_batch_execution
   actor: claude_code
-  step_type: llm + scripts
+  step_type: ai_routing + scripts
   batch_report_sections:
     - Tasks Completed
     - Files Changed
@@ -158,7 +208,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   codex_reviews_batch: `step_contract:
   id: codex_reviews_batch
   actor: codex
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - findings
     - severity or priority
@@ -175,8 +225,8 @@ const STAGE_SCHEMAS: Record<string, string> = {
 
   gate_major_phase: `step_contract:
   id: gate_major_phase
-  actor: codex (with human escalation)
-  step_type: llm
+  actor: human
+  step_type: human_approval_gate
   purpose: prevent downstream work before upstream contracts verified
   typical_gates:
     - backend before UI
@@ -189,7 +239,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
   final_revision: `step_contract:
   id: final_revision
   actor: claude_code
-  step_type: llm
+  step_type: ai_routing
   required_outputs:
     - what changed
     - what files changed
@@ -200,8 +250,8 @@ const STAGE_SCHEMAS: Record<string, string> = {
     - output is treated as final version for v1
     - no unresolved blockers unless escalated`,
 
-  integrate_merge_cleanup: `step_contract:
-  id: integrate_merge_cleanup
+  integrate_and_verify: `step_contract:
+  id: integrate_and_verify
   actor: human + codex
   step_type: script
   required_checks:
@@ -214,10 +264,32 @@ const STAGE_SCHEMAS: Record<string, string> = {
   validation:
     - delivery is complete only when integration is clean`,
 
-  next_cycle: `step_contract:
-  id: next_cycle
-  actor: human + codex
-  step_type: llm
+  prepare_release_package: `step_contract:
+  id: prepare_release_package
+  actor: codex
+  step_type: ai_routing
+  required_outputs:
+    - delivery surface
+    - release notes
+    - demo assets
+    - outstanding follow-ups`,
+
+  delivery_approval_gate: `step_contract:
+  id: delivery_approval_gate
+  actor: human
+  step_type: human_approval_gate
+  approval_scope:
+    - release package
+    - delivery surface
+  allowed_decisions:
+    - approved
+    - revise
+    - reject`,
+
+  capture_next_cycle: `step_contract:
+  id: capture_next_cycle
+  actor: codex
+  step_type: ai_routing
   required_topics:
     - architectural debt
     - deferred cleanup
@@ -227,6 +299,15 @@ const STAGE_SCHEMAS: Record<string, string> = {
     - next spec or plan candidate
   validation:
     - at least one next action is identified`,
+
+  update_backlog_and_debt: `step_contract:
+  id: update_backlog_and_debt
+  actor: codex
+  step_type: ai_routing
+  required_outputs:
+    - immediate follow-ups
+    - deferred debt
+    - candidate specs`,
 };
 
 export function buildSchemaContent(step: Pick<WorkflowStep, "id" | "inputs" | "outputs" | "validation" | "failure" | "next">): string {

@@ -7,7 +7,7 @@ test("renders current stage, actor, and status", () => {
       taskId="TASK-1"
       workflowName="Example"
       status="done"
-      currentStage="next_cycle"
+      currentStage="update_backlog_and_debt"
       currentActor="human"
       round={2}
     />,
@@ -15,5 +15,5 @@ test("renders current stage, actor, and status", () => {
 
   expect(screen.getByText(/task-1/i)).toBeInTheDocument();
   expect(screen.getByText(/human/i)).toBeInTheDocument();
-  expect(screen.getByText(/next_cycle/i)).toBeInTheDocument();
+  expect(screen.getByText(/update_backlog_and_debt/i)).toBeInTheDocument();
 });

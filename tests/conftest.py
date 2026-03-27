@@ -30,7 +30,7 @@ def scaffolded_task(tmp_path):
     state = {
         "task_id": "TASK-2026-01-01-test",
         "status": "active",
-        "current_phase": "intention_framing",
+        "current_phase": "research",
         "stage": "clarify_objective",
         "round": 0,
         "current_actor": "codex",

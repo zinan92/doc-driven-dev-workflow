@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-18T07:34:47.693Z",
+  "generatedAt": "2026-03-27T06:32:29.453Z",
   "snapshots": [
     {
       "id": "example-task",
@@ -13,7 +13,7 @@
         "current_actor": "human",
         "last_artifact": "handoffs/99-next-cycle.md",
         "stop_reason": "final_revision_completed",
-        "current_phase": "integration_cleanup",
+        "current_phase": "maintenance",
         "updated_at": null
       },
       "statusMd": "# TASK-2026-03-15-example-greeter Status\n\n- Current stage: `next_cycle`\n- Current owner: `human`\n- Current round or batch: `2`\n- Latest conclusion: `Final revision completed, integration checklist closed, and next-cycle notes captured.`\n- Blockers: `None`\n- Next step: `Use handoffs/99-next-cycle.md to decide the next task.`\n",
@@ -273,7 +273,7 @@
         "current_actor": "human",
         "last_artifact": "handoffs/99-next-cycle.md",
         "stop_reason": "final_revision_completed",
-        "current_phase": "integration_cleanup",
+        "current_phase": "maintenance",
         "updated_at": null
       },
       "statusMd": "# TASK-2026-03-15-medium-feed-workbench Status\n\n- Current stage: `next_cycle`\n- Current owner: `human`\n- Current round or batch: `4`\n- Latest conclusion: `Backend and UI phases completed, integration closed, and next-cycle follow-ups captured.`\n- Blockers: `None`\n- Next step: `Review handoffs/99-next-cycle.md before starting the next phase of work.`\n",
@@ -517,6 +517,519 @@
           "content": "# Next Cycle\n\n## Architectural Debt\n\n- The example still treats the phase gate as a lightweight document rather than a richer contract artifact\n- Cross-phase schema evolution is only lightly represented\n\n## Deferred Work\n\n- Add a dedicated phase-gate handoff template\n- Add a validator check for phase-gate evidence in medium tasks\n\n## Product Polish Opportunities\n\n- Add diagrams for backend-to-UI dependency flow\n- Add one example with a stop-and-rethink gate decision\n\n## Next Spec Candidate\n\nCreate a medium-to-large example that shows a failed phase gate, a rethink decision, and a resumed implementation cycle.",
           "frontmatter": {
             "task_id": "TASK-2026-03-15-medium-feed-workbench",
+            "author": "codex",
+            "role": "planner",
+            "stage": "next_cycle",
+            "status": "draft",
+            "next_actor": "human"
+          }
+        }
+      ]
+    },
+    {
+      "id": "TASK-2026-03-18-trading-arena",
+      "label": "trading arena",
+      "sourceDir": "tasks/TASK-2026-03-18-trading-arena",
+      "state": {
+        "task_id": "TASK-2026-03-18-trading-arena",
+        "status": "active",
+        "current_phase": "research",
+        "stage": "clarify_objective",
+        "round": 0,
+        "current_actor": "codex",
+        "last_artifact": "handoffs/00-intake.md",
+        "updated_at": null,
+        "stop_reason": null
+      },
+      "statusMd": "# TASK-2026-03-18-trading-arena Status\n\n- Current stage: `intake`\n- Current owner: `codex`\n- Current round or batch: `0`\n- Latest conclusion: `Task created; waiting for intake to be completed.`\n- Blockers: `None`\n- Next step: `Write handoffs/00-intake.md`\n",
+      "runLog": [
+        {
+          "timestamp": "2026-03-18T00:00:00Z",
+          "event": "task_created",
+          "task_id": "TASK-2026-03-18-trading-arena",
+          "phase": "intention_framing",
+          "stage": "clarify_objective",
+          "actor": "codex",
+          "artifact": "handoffs/00-intake.md",
+          "status": "active",
+          "round": 0
+        }
+      ],
+      "handoffs": [
+        {
+          "filename": "00-intake.md",
+          "content": "# Intake\n\n## Objective\n\nBuild a product called **Trading Arena** that deploys all trading-related skills from my GitHub repos into a single platform, allowing users to discover, understand, and use these skills in one place.\n\n## Requested Outcome\n\n- A platform where all ~35 trading skills (from tradermonty/claude-trading-skills) are accessible\n- Users can understand each skill's capability and try them out\n- Skills can be used individually or in combination\n- Final product form is TBD — needs brainstorming in Stage 0\n\n## Constraints\n\n- Repo path: `/Users/wendy/work/trading-co/trading-arena`\n- Deadline or urgency: No hard deadline, exploratory phase\n- Known constraints: Skills currently run as Claude Code slash commands; need to determine how to expose them to external users\n\n## Existing Inputs\n\n- Installed skills: `~/.claude/skills/` (35 trading skills from tradermonty/claude-trading-skills)\n- Knowledge graph trading catalog: `~/work/dev-co/knowledge-graph/trading/input/tools/` (7 external repos)\n- Trading system roadmap: `/Users/wendy/Documents/trading-system-roadmap.md`\n\n## External Repos for Reference/Integration\n\n| # | Name | Source | Type | Relevance |\n|---|------|--------|------|-----------|\n| 1 | claude-trading-skills-collection | tradermonty | 30+ Skill collection (locally installed) | 9 |\n| 2 | stock-research-executor | liangdabiao | 8-stage deep research, multi-agent | 9 |\n| 3 | TradingAgents | TauricResearch | LangGraph multi-agent debate framework | 9 |\n| 4 | stock-analysis-skills | Day1Global | Tech earnings deep analysis | 8 |\n| 5 | AI-Trader | HKUDS | Multi-AI competitive trading + Leaderboard | 8 |\n| 6 | trading-plan-generator | jamesrochabrun | 9-module trading plan generator | 8 |\n| 7 | daily-stock-analysis | ZhuLinsen | GitHub Actions EOD analysis | 7 |\n\n## Notes\n\nProduct form is undecided. Could be: web app, API service, showcase site, orchestration platform, or something else entirely. Stage 0 should explore this.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "human",
+            "role": "requester",
+            "stage": "intake",
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "05-task-classification.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena\"\nauthor: codex\nrole: planner\nstage: classification\nstatus: completed\nnext_actor: codex\ntask_type: feature\ntask_size: medium\nconfidence: medium\nrationale:\n  - \"{{RATIONALE_1}}\"\n  - \"{{RATIONALE_2}}\"\nsuccess_condition: \"{{SUCCESS_CONDITION}}\"\nscope_boundary: \"{{SCOPE_BOUNDARY}}\"",
+          "frontmatter": {}
+        },
+        {
+          "filename": "08-scope-estimate.md",
+          "content": "# Scope Estimate\n\n## Estimated Size\n\n`{{TASK_SIZE}}`\n\n## Estimate Summary\n\n{{ESTIMATE_SUMMARY}}\n\n## Main Drivers\n\n- {{DRIVER_1}}\n- {{DRIVER_2}}\n- {{DRIVER_3}}\n\n## Workflow Impact\n\n- PRD depth: `{{PRD_DEPTH}}`\n- Planning depth: `{{PLAN_DEPTH}}`\n- Delivery mode: `{{DELIVERY_MODE}}`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "stage": "scope_estimation",
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "10-prd.md",
+          "content": "# PRD: Trading Arena\n\n## Purpose\n\n{{PURPOSE}}\n\n## Problem\n\n{{PROBLEM}}\n\n## Goals\n\n- {{GOAL_1}}\n- {{GOAL_2}}\n\n## Non-Goals\n\n- {{NON_GOAL_1}}\n- {{NON_GOAL_2}}\n\n## User Value\n\n{{USER_VALUE}}\n\n## Scope\n\n{{SCOPE}}\n\n## Expected Behavior\n\n- {{BEHAVIOR_1}}\n- {{BEHAVIOR_2}}\n\n## Contracts\n\n- {{CONTRACT_1}}\n- {{CONTRACT_2}}\n\n## Acceptance Criteria\n\n- {{AC_1}}\n- {{AC_2}}\n\n## Constraints\n\n- {{CONSTRAINT_1}}\n- {{CONSTRAINT_2}}\n\n## Terminology\n\n- {{TERM_1}}: {{TERM_1_DEF}}\n- {{TERM_2}}: {{TERM_2_DEF}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "stage": "prd",
+            "status": "draft",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "15-prd-reality-review.md",
+          "content": "# PRD Reality Review\n\n## Baseline Checked\n\n- Repo path: `/Users/wendy/work/trading-co/trading-arena`\n- Environment or service checked: `{{ENVIRONMENT}}`\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Resolved Contradictions\n\n- {{RESOLUTION_1}}\n- {{RESOLUTION_2}}\n\n## Required PRD Corrections\n\n- {{CORRECTION_1}}\n- {{CORRECTION_2}}\n\n## Approved Baseline Assumptions\n\n- {{ASSUMPTION_1}}\n- {{ASSUMPTION_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "prd_reality_review",
+            "inputs": [
+              "handoffs/10-prd.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "20-user-flow.md",
+          "content": "# User Flow: {{FLOW_NAME}}\n\n## User\n\n{{USER_DESCRIPTION}}\n\n## Entry Point\n\n{{ENTRY_POINT}}\n\n## Flow Summary\n\n{{FLOW_SUMMARY}}\n\n## Steps\n\n1. {{STEP_1}}\n2. {{STEP_2}}\n3. {{STEP_3}}\n\n## System Responses\n\n- {{SYSTEM_RESPONSE_1}}\n- {{SYSTEM_RESPONSE_2}}\n\n## Completion Condition\n\n{{COMPLETION_CONDITION}}\n\n## Open Questions\n\n- {{QUESTION_1}}\n- {{QUESTION_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "stage": "user_flow",
+            "status": "draft",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "21-user-flow.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena\"\nflow_name: \"{{FLOW_NAME}}\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: entry\n    name: \"{{ENTRY_STEP_NAME}}\"\n    actor: user\n    step_type: script\n    goal: \"{{ENTRY_GOAL}}\"\n    inputs:\n      - \"{{ENTRY_INPUT}}\"\n    outputs:\n      - \"{{ENTRY_OUTPUT}}\"\n    validation:\n      type: schema\n      schema: \"{{ENTRY_SCHEMA}}\"\n    failure:\n      on_validation_error: \"{{ENTRY_FAILURE}}\"\n    next:\n      - \"{{NEXT_STEP_ID}}\"\n  - id: review_gate\n    name: \"{{GATE_NAME}}\"\n    actor: human\n    step_type: human_gate\n    goal: \"{{GATE_GOAL}}\"\n    inputs:\n      - \"{{GATE_INPUT}}\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    failure:\n      on_validation_error: request_human_retry\n    next:\n      approve: \"{{APPROVE_NEXT}}\"\n      revise: \"{{REVISE_NEXT}}\"\n      reject: end",
+          "frontmatter": {}
+        },
+        {
+          "filename": "25-human-approval.md",
+          "content": "# Human Approval Request\n\n## Decision\n\n`pending`\n\n## Notes\n\nReview the PRD and user flow artifacts, then replace this pending request with the human decision.\n\n## Constraints\n\n- Do not proceed past this gate without explicit human approval.\n- Update frontmatter and decision content when the human responds.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "gate": "prd_user_flow",
+            "status": "pending",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "30-implementation-plan.md",
+          "content": "# Trading Arena Implementation Plan\n\n> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.\n\n**Goal:** {{GOAL}}\n\n**Architecture:** {{ARCHITECTURE}}\n\n**Tech Stack:** {{TECH_STACK}}\n\n---\n\n### Task 1: {{TASK_NAME_1}}\n\n**Files:**\n- Modify: `{{FILE_1}}`\n- Test: `{{TEST_FILE_1}}`\n\n**Step 1: Write the failing test**\n\n{{TEST_STEP_1}}\n\n**Step 2: Run the test to verify it fails**\n\nRun: `{{FAIL_COMMAND_1}}`\n\nExpected: `{{FAIL_EXPECTATION_1}}`\n\n**Step 3: Write the minimal implementation**\n\n{{IMPLEMENTATION_STEP_1}}\n\n**Step 4: Run the test to verify it passes**\n\nRun: `{{PASS_COMMAND_1}}`\n\nExpected: `{{PASS_EXPECTATION_1}}`\n\n### Task 2: {{TASK_NAME_2}}\n\n**Files:**\n- Modify: `{{FILE_2}}`\n- Test: `{{TEST_FILE_2}}`\n\n**Step 1: Write the failing test**\n\n{{TEST_STEP_2}}\n\n**Step 2: Run the test to verify it fails**\n\nRun: `{{FAIL_COMMAND_2}}`\n\nExpected: `{{FAIL_EXPECTATION_2}}`\n\n**Step 3: Write the minimal implementation**\n\n{{IMPLEMENTATION_STEP_2}}\n\n**Step 4: Run the test to verify it passes**\n\nRun: `{{PASS_COMMAND_2}}`\n\nExpected: `{{PASS_EXPECTATION_2}}`",
+          "frontmatter": {}
+        },
+        {
+          "filename": "32-execution-workflow.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena\"\nworkflow_name: \"{{WORKFLOW_NAME}}\"\nstatus: draft\nsteps:\n  - id: implementation_batch_1\n    name: Implement first batch\n    actor: claude_code\n    step_type: llm\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - codex_review_1\n  - id: codex_review_1\n    name: Review first batch\n    actor: codex\n    step_type: llm\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - implementation_batch_2",
+          "frontmatter": {}
+        },
+        {
+          "filename": "35-plan-review.md",
+          "content": "# Implementation Plan Review\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Clarified Execution Order\n\n- {{ORDER_1}}\n- {{ORDER_2}}\n\n## Clarified Verification Commands\n\n- `{{VERIFY_COMMAND_1}}`\n- `{{VERIFY_COMMAND_2}}`\n\n## Dependency Boundaries\n\n- {{BOUNDARY_1}}\n- {{BOUNDARY_2}}\n\n## Plan Decision\n\n`approved`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "plan_review",
+            "inputs": [
+              "handoffs/30-implementation-plan.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "40-execution-prompt.md",
+          "content": "# Execution Prompt for Claude Code\n\n## Repository\n\n- Repo path: `/Users/wendy/work/trading-co/trading-arena`\n- Working branch or worktree: `task/trading-arena`\n\n## Source of Truth\n\n- PRD: `handoffs/10-prd.md`\n- User flow: `handoffs/20-user-flow.md`\n- User flow YAML: `handoffs/21-user-flow.yaml`\n- Approved plan: `handoffs/30-implementation-plan.md`\n- Reviewed plan: `handoffs/35-plan-review.md`\n\n## Execution Rules\n\n- Follow the implementation plan in order.\n- Do not expand scope without explicit approval.\n- Stop if required inputs are missing.\n- Report each batch in a new handoff document.\n- Prefer scripts for verification and reporting where possible.\n\n## Stop Conditions\n\n- Missing source-of-truth document\n- Validation failure that cannot be resolved\n- Secret, private key, or destructive operation required\n- Human approval gate triggered\n\n## Required Report Format\n\nEach batch report must include:\n\n- Tasks Completed\n- Files Changed\n- Tests Run\n- Result\n- Next Proposed Batch\n\n## Forbidden Behavior\n\n- Do not rewrite the PRD.\n- Do not rewrite the approved user flow.\n- Do not skip required verification.\n- Do not silently change architecture.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "stage": "execution_prompt",
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "50-claude-batch-r1.md",
+          "content": "# Claude Code Batch Report Round 1\n\n## Tasks Completed\n\n- {{TASK_DONE_1}}\n- {{TASK_DONE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Tests Run\n\n- `{{TEST_COMMAND_1}}`\n- `{{TEST_COMMAND_2}}`\n\n## Result\n\n{{RESULT_SUMMARY}}\n\n## Next Proposed Batch\n\n- {{NEXT_BATCH_1}}\n- {{NEXT_BATCH_2}}\n\n## Blockers\n\n- {{BLOCKER_1}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "implementation_batch",
+            "round": 1,
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "60-codex-review-r1.md",
+          "content": "# Codex Review Round 1\n\n## Summary\n\n{{SUMMARY}}\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Required Changes\n\n- {{REQUIRED_CHANGE_1}}\n- {{REQUIRED_CHANGE_2}}\n\n## Optional Improvements\n\n- {{OPTIONAL_1}}\n\n## Gate Decision\n\n`fix_before_proceeding`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "review",
+            "round": 1,
+            "inputs": [
+              "handoffs/50-claude-batch-r1.md"
+            ],
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "70-claude-batch-r2.md",
+          "content": "# Claude Code Revision Report Round 2\n\n## Changes Made\n\n- {{CHANGE_1}}\n- {{CHANGE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Tests Run\n\n- `{{TEST_COMMAND_1}}`\n- `{{TEST_COMMAND_2}}`\n\n## Remaining Issues\n\n- {{REMAINING_ISSUE_1}}\n\n## Next Proposed Batch\n\n- {{NEXT_BATCH_1}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "revision_batch",
+            "round": 2,
+            "inputs": [
+              "handoffs/60-codex-review-r1.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "80-codex-review-r2.md",
+          "content": "# Codex Review Round 2\n\n## Summary\n\n{{SUMMARY}}\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Final Required Changes\n\n- {{FINAL_CHANGE_1}}\n- {{FINAL_CHANGE_2}}\n\n## Optional Improvements\n\n- {{OPTIONAL_1}}\n\n## Gate Decision\n\n`fix_before_proceeding`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "review",
+            "round": 2,
+            "inputs": [
+              "handoffs/70-claude-batch-r2.md"
+            ],
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "90-claude-final.md",
+          "content": "# Claude Code Final Revision\n\n## Final Changes\n\n- {{FINAL_CHANGE_1}}\n- {{FINAL_CHANGE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Verification Run\n\n- `{{VERIFY_COMMAND_1}}`\n- `{{VERIFY_COMMAND_2}}`\n\n## Remaining Caveats\n\n- {{CAVEAT_1}}\n- {{CAVEAT_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "final_revision",
+            "status": "completed",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "95-integration-checklist.md",
+          "content": "# Integration Checklist\n\n- [ ] Required tests have been run\n- [ ] Required build checks have been run\n- [ ] Repo state is understandable\n- [ ] Merge readiness has been reviewed\n- [ ] Branch or worktree cleanup is complete\n- [ ] Follow-up items are documented",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "human",
+            "role": "integrator",
+            "stage": "integration",
+            "status": "in_progress",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "99-next-cycle.md",
+          "content": "# Next Cycle\n\n## Architectural Debt\n\n- {{DEBT_1}}\n- {{DEBT_2}}\n\n## Deferred Work\n\n- {{DEFERRED_1}}\n- {{DEFERRED_2}}\n\n## Product Polish Opportunities\n\n- {{POLISH_1}}\n- {{POLISH_2}}\n\n## Next Spec Candidate\n\n{{NEXT_SPEC_CANDIDATE}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena",
+            "author": "codex",
+            "role": "planner",
+            "stage": "next_cycle",
+            "status": "draft",
+            "next_actor": "human"
+          }
+        }
+      ]
+    },
+    {
+      "id": "TASK-2026-03-18-trading-arena-showcase",
+      "label": "trading arena showcase",
+      "sourceDir": "tasks/TASK-2026-03-18-trading-arena-showcase",
+      "state": {
+        "task_id": "TASK-2026-03-18-trading-arena-showcase",
+        "status": "active",
+        "current_phase": "research",
+        "stage": "clarify_objective",
+        "round": 1,
+        "current_actor": "codex",
+        "last_artifact": "handoffs/00-intake.md",
+        "updated_at": null,
+        "stop_reason": null
+      },
+      "statusMd": "# TASK-2026-03-18-trading-arena-showcase Status\n\n- Current stage: `intake`\n- Current owner: `codex`\n- Current round or batch: `0`\n- Latest conclusion: `Task created; waiting for intake to be completed.`\n- Blockers: `None`\n- Next step: `Write handoffs/00-intake.md`\n",
+      "runLog": [
+        {
+          "timestamp": "2026-03-18T00:00:00Z",
+          "event": "task_created",
+          "task_id": "TASK-2026-03-18-trading-arena-showcase",
+          "phase": "intention_framing",
+          "stage": "clarify_objective",
+          "actor": "codex",
+          "artifact": "handoffs/00-intake.md",
+          "status": "active",
+          "round": 0
+        },
+        {
+          "timestamp": "2026-03-18T10:27:51Z",
+          "event": "artifact_written",
+          "task_id": "TASK-2026-03-18-trading-arena-showcase",
+          "phase": "intention_framing",
+          "stage": "clarify_objective",
+          "actor": "codex",
+          "artifact": "handoffs/00-intake.md",
+          "status": "active",
+          "round": 1
+        }
+      ],
+      "handoffs": [
+        {
+          "filename": "00-intake.md",
+          "content": "# Intake\n\n## Objective\n\nBuild \"Trading Arena\" — a showcase web application that displays all trading-related skills from the knowledge graph, explains each skill's capabilities, usage, and dependencies, and lets users (starting with the owner) try them interactively in one place.\n\n## Requested Outcome\n\nA single-page web app (or lightweight multi-page site) that:\n1. Lists all 7 trading skill categories (30+ individual skills) with descriptions, use cases, and API requirements\n2. Provides interactive demos or guided walkthroughs for each skill\n3. Serves as both documentation and a launchpad for running skills\n4. Looks polished enough to share publicly as a portfolio piece\n\n## Constraints\n\n- Repo path: `/Users/wendy/work/dev-co/doc-driven-dev-workflow`\n- Deadline or urgency: No hard deadline, quality over speed\n- Known constraints: Skills run in Claude Code environment; showcase should explain how to use them, not necessarily execute them server-side\n\n## Existing Inputs\n\n- Existing docs: `/Users/wendy/work/dev-co/knowledge-graph/trading/input/tools/` (7 skill files)\n- Relevant repo or environment notes: Skills are Claude Code skills installed at `~/.claude/skills/`. Some require API keys (FMP, FINVIZ). The user is an active multi-market trader.\n\n## Notes\n\n- Owner wants to \"see what these skills can do\" — emphasis on discoverability and understanding\n- Future vision may include actually running skills from the UI, but v1 is showcase/documentation\n- Target audience: the owner first, potentially public later",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "human",
+            "role": "requester",
+            "stage": "intake",
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "05-task-classification.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena-showcase\"\nauthor: codex\nrole: planner\nstage: classification\nstatus: completed\nnext_actor: codex\ntask_type: feature\ntask_size: medium\nconfidence: medium\nrationale:\n  - \"{{RATIONALE_1}}\"\n  - \"{{RATIONALE_2}}\"\nsuccess_condition: \"{{SUCCESS_CONDITION}}\"\nscope_boundary: \"{{SCOPE_BOUNDARY}}\"",
+          "frontmatter": {}
+        },
+        {
+          "filename": "08-scope-estimate.md",
+          "content": "# Scope Estimate\n\n## Estimated Size\n\n`{{TASK_SIZE}}`\n\n## Estimate Summary\n\n{{ESTIMATE_SUMMARY}}\n\n## Main Drivers\n\n- {{DRIVER_1}}\n- {{DRIVER_2}}\n- {{DRIVER_3}}\n\n## Workflow Impact\n\n- PRD depth: `{{PRD_DEPTH}}`\n- Planning depth: `{{PLAN_DEPTH}}`\n- Delivery mode: `{{DELIVERY_MODE}}`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "planner",
+            "stage": "scope_estimation",
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "10-prd.md",
+          "content": "# PRD: trading-arena-showcase\n\n## Purpose\n\n{{PURPOSE}}\n\n## Problem\n\n{{PROBLEM}}\n\n## Goals\n\n- {{GOAL_1}}\n- {{GOAL_2}}\n\n## Non-Goals\n\n- {{NON_GOAL_1}}\n- {{NON_GOAL_2}}\n\n## User Value\n\n{{USER_VALUE}}\n\n## Scope\n\n{{SCOPE}}\n\n## Expected Behavior\n\n- {{BEHAVIOR_1}}\n- {{BEHAVIOR_2}}\n\n## Contracts\n\n- {{CONTRACT_1}}\n- {{CONTRACT_2}}\n\n## Acceptance Criteria\n\n- {{AC_1}}\n- {{AC_2}}\n\n## Constraints\n\n- {{CONSTRAINT_1}}\n- {{CONSTRAINT_2}}\n\n## Terminology\n\n- {{TERM_1}}: {{TERM_1_DEF}}\n- {{TERM_2}}: {{TERM_2_DEF}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "planner",
+            "stage": "prd",
+            "status": "draft",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "15-prd-reality-review.md",
+          "content": "# PRD Reality Review\n\n## Baseline Checked\n\n- Repo path: `/Users/wendy/work/dev-co/doc-driven-dev-workflow`\n- Environment or service checked: `{{ENVIRONMENT}}`\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Resolved Contradictions\n\n- {{RESOLUTION_1}}\n- {{RESOLUTION_2}}\n\n## Required PRD Corrections\n\n- {{CORRECTION_1}}\n- {{CORRECTION_2}}\n\n## Approved Baseline Assumptions\n\n- {{ASSUMPTION_1}}\n- {{ASSUMPTION_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "prd_reality_review",
+            "inputs": [
+              "handoffs/10-prd.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "20-user-flow.md",
+          "content": "# User Flow: {{FLOW_NAME}}\n\n## User\n\n{{USER_DESCRIPTION}}\n\n## Entry Point\n\n{{ENTRY_POINT}}\n\n## Flow Summary\n\n{{FLOW_SUMMARY}}\n\n## Steps\n\n1. {{STEP_1}}\n2. {{STEP_2}}\n3. {{STEP_3}}\n\n## System Responses\n\n- {{SYSTEM_RESPONSE_1}}\n- {{SYSTEM_RESPONSE_2}}\n\n## Completion Condition\n\n{{COMPLETION_CONDITION}}\n\n## Open Questions\n\n- {{QUESTION_1}}\n- {{QUESTION_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "planner",
+            "stage": "user_flow",
+            "status": "draft",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "21-user-flow.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena-showcase\"\nflow_name: \"{{FLOW_NAME}}\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: entry\n    name: \"{{ENTRY_STEP_NAME}}\"\n    actor: user\n    step_type: script\n    goal: \"{{ENTRY_GOAL}}\"\n    inputs:\n      - \"{{ENTRY_INPUT}}\"\n    outputs:\n      - \"{{ENTRY_OUTPUT}}\"\n    validation:\n      type: schema\n      schema: \"{{ENTRY_SCHEMA}}\"\n    failure:\n      on_validation_error: \"{{ENTRY_FAILURE}}\"\n    next:\n      - \"{{NEXT_STEP_ID}}\"\n  - id: review_gate\n    name: \"{{GATE_NAME}}\"\n    actor: human\n    step_type: human_gate\n    goal: \"{{GATE_GOAL}}\"\n    inputs:\n      - \"{{GATE_INPUT}}\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    failure:\n      on_validation_error: request_human_retry\n    next:\n      approve: \"{{APPROVE_NEXT}}\"\n      revise: \"{{REVISE_NEXT}}\"\n      reject: end",
+          "frontmatter": {}
+        },
+        {
+          "filename": "25-human-approval.md",
+          "content": "# Human Approval Request\n\n## Decision\n\n`pending`\n\n## Notes\n\nReview the PRD and user flow artifacts, then replace this pending request with the human decision.\n\n## Constraints\n\n- Do not proceed past this gate without explicit human approval.\n- Update frontmatter and decision content when the human responds.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "planner",
+            "gate": "prd_user_flow",
+            "status": "pending",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "30-implementation-plan.md",
+          "content": "# trading-arena-showcase Implementation Plan\n\n> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.\n\n**Goal:** {{GOAL}}\n\n**Architecture:** {{ARCHITECTURE}}\n\n**Tech Stack:** {{TECH_STACK}}\n\n---\n\n### Task 1: {{TASK_NAME_1}}\n\n**Files:**\n- Modify: `{{FILE_1}}`\n- Test: `{{TEST_FILE_1}}`\n\n**Step 1: Write the failing test**\n\n{{TEST_STEP_1}}\n\n**Step 2: Run the test to verify it fails**\n\nRun: `{{FAIL_COMMAND_1}}`\n\nExpected: `{{FAIL_EXPECTATION_1}}`\n\n**Step 3: Write the minimal implementation**\n\n{{IMPLEMENTATION_STEP_1}}\n\n**Step 4: Run the test to verify it passes**\n\nRun: `{{PASS_COMMAND_1}}`\n\nExpected: `{{PASS_EXPECTATION_1}}`\n\n### Task 2: {{TASK_NAME_2}}\n\n**Files:**\n- Modify: `{{FILE_2}}`\n- Test: `{{TEST_FILE_2}}`\n\n**Step 1: Write the failing test**\n\n{{TEST_STEP_2}}\n\n**Step 2: Run the test to verify it fails**\n\nRun: `{{FAIL_COMMAND_2}}`\n\nExpected: `{{FAIL_EXPECTATION_2}}`\n\n**Step 3: Write the minimal implementation**\n\n{{IMPLEMENTATION_STEP_2}}\n\n**Step 4: Run the test to verify it passes**\n\nRun: `{{PASS_COMMAND_2}}`\n\nExpected: `{{PASS_EXPECTATION_2}}`",
+          "frontmatter": {}
+        },
+        {
+          "filename": "32-execution-workflow.yaml",
+          "content": "task_id: \"TASK-2026-03-18-trading-arena-showcase\"\nworkflow_name: \"{{WORKFLOW_NAME}}\"\nstatus: draft\nsteps:\n  - id: implementation_batch_1\n    name: Implement first batch\n    actor: claude_code\n    step_type: llm\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - codex_review_1\n  - id: codex_review_1\n    name: Review first batch\n    actor: codex\n    step_type: llm\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - implementation_batch_2",
+          "frontmatter": {}
+        },
+        {
+          "filename": "35-plan-review.md",
+          "content": "# Implementation Plan Review\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Clarified Execution Order\n\n- {{ORDER_1}}\n- {{ORDER_2}}\n\n## Clarified Verification Commands\n\n- `{{VERIFY_COMMAND_1}}`\n- `{{VERIFY_COMMAND_2}}`\n\n## Dependency Boundaries\n\n- {{BOUNDARY_1}}\n- {{BOUNDARY_2}}\n\n## Plan Decision\n\n`approved`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "plan_review",
+            "inputs": [
+              "handoffs/30-implementation-plan.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "40-execution-prompt.md",
+          "content": "# Execution Prompt for Claude Code\n\n## Repository\n\n- Repo path: `/Users/wendy/work/dev-co/doc-driven-dev-workflow`\n- Working branch or worktree: `task/trading-arena-showcase`\n\n## Source of Truth\n\n- PRD: `handoffs/10-prd.md`\n- User flow: `handoffs/20-user-flow.md`\n- User flow YAML: `handoffs/21-user-flow.yaml`\n- Approved plan: `handoffs/30-implementation-plan.md`\n- Reviewed plan: `handoffs/35-plan-review.md`\n\n## Execution Rules\n\n- Follow the implementation plan in order.\n- Do not expand scope without explicit approval.\n- Stop if required inputs are missing.\n- Report each batch in a new handoff document.\n- Prefer scripts for verification and reporting where possible.\n\n## Stop Conditions\n\n- Missing source-of-truth document\n- Validation failure that cannot be resolved\n- Secret, private key, or destructive operation required\n- Human approval gate triggered\n\n## Required Report Format\n\nEach batch report must include:\n\n- Tasks Completed\n- Files Changed\n- Tests Run\n- Result\n- Next Proposed Batch\n\n## Forbidden Behavior\n\n- Do not rewrite the PRD.\n- Do not rewrite the approved user flow.\n- Do not skip required verification.\n- Do not silently change architecture.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "planner",
+            "stage": "execution_prompt",
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "50-claude-batch-r1.md",
+          "content": "# Claude Code Batch Report Round 1\n\n## Tasks Completed\n\n- {{TASK_DONE_1}}\n- {{TASK_DONE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Tests Run\n\n- `{{TEST_COMMAND_1}}`\n- `{{TEST_COMMAND_2}}`\n\n## Result\n\n{{RESULT_SUMMARY}}\n\n## Next Proposed Batch\n\n- {{NEXT_BATCH_1}}\n- {{NEXT_BATCH_2}}\n\n## Blockers\n\n- {{BLOCKER_1}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "implementation_batch",
+            "round": 1,
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "60-codex-review-r1.md",
+          "content": "# Codex Review Round 1\n\n## Summary\n\n{{SUMMARY}}\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Required Changes\n\n- {{REQUIRED_CHANGE_1}}\n- {{REQUIRED_CHANGE_2}}\n\n## Optional Improvements\n\n- {{OPTIONAL_1}}\n\n## Gate Decision\n\n`fix_before_proceeding`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "review",
+            "round": 1,
+            "inputs": [
+              "handoffs/50-claude-batch-r1.md"
+            ],
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "70-claude-batch-r2.md",
+          "content": "# Claude Code Revision Report Round 2\n\n## Changes Made\n\n- {{CHANGE_1}}\n- {{CHANGE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Tests Run\n\n- `{{TEST_COMMAND_1}}`\n- `{{TEST_COMMAND_2}}`\n\n## Remaining Issues\n\n- {{REMAINING_ISSUE_1}}\n\n## Next Proposed Batch\n\n- {{NEXT_BATCH_1}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "revision_batch",
+            "round": 2,
+            "inputs": [
+              "handoffs/60-codex-review-r1.md"
+            ],
+            "status": "completed",
+            "next_actor": "codex"
+          }
+        },
+        {
+          "filename": "80-codex-review-r2.md",
+          "content": "# Codex Review Round 2\n\n## Summary\n\n{{SUMMARY}}\n\n## Findings\n\n- {{FINDING_1}}\n- {{FINDING_2}}\n\n## Final Required Changes\n\n- {{FINAL_CHANGE_1}}\n- {{FINAL_CHANGE_2}}\n\n## Optional Improvements\n\n- {{OPTIONAL_1}}\n\n## Gate Decision\n\n`fix_before_proceeding`",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "codex",
+            "role": "reviewer",
+            "stage": "review",
+            "round": 2,
+            "inputs": [
+              "handoffs/70-claude-batch-r2.md"
+            ],
+            "status": "completed",
+            "next_actor": "claude_code"
+          }
+        },
+        {
+          "filename": "90-claude-final.md",
+          "content": "# Claude Code Final Revision\n\n## Final Changes\n\n- {{FINAL_CHANGE_1}}\n- {{FINAL_CHANGE_2}}\n\n## Files Changed\n\n- `{{FILE_CHANGED_1}}`\n- `{{FILE_CHANGED_2}}`\n\n## Verification Run\n\n- `{{VERIFY_COMMAND_1}}`\n- `{{VERIFY_COMMAND_2}}`\n\n## Remaining Caveats\n\n- {{CAVEAT_1}}\n- {{CAVEAT_2}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "claude_code",
+            "role": "implementer",
+            "stage": "final_revision",
+            "status": "completed",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "95-integration-checklist.md",
+          "content": "# Integration Checklist\n\n- [ ] Required tests have been run\n- [ ] Required build checks have been run\n- [ ] Repo state is understandable\n- [ ] Merge readiness has been reviewed\n- [ ] Branch or worktree cleanup is complete\n- [ ] Follow-up items are documented",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
+            "author": "human",
+            "role": "integrator",
+            "stage": "integration",
+            "status": "in_progress",
+            "next_actor": "human"
+          }
+        },
+        {
+          "filename": "99-next-cycle.md",
+          "content": "# Next Cycle\n\n## Architectural Debt\n\n- {{DEBT_1}}\n- {{DEBT_2}}\n\n## Deferred Work\n\n- {{DEFERRED_1}}\n- {{DEFERRED_2}}\n\n## Product Polish Opportunities\n\n- {{POLISH_1}}\n- {{POLISH_2}}\n\n## Next Spec Candidate\n\n{{NEXT_SPEC_CANDIDATE}}",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-18-trading-arena-showcase",
             "author": "codex",
             "role": "planner",
             "stage": "next_cycle",

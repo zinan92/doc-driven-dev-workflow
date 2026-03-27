@@ -2,12 +2,12 @@
 task_id: "{{TASK_ID}}"
 author: codex
 role: planner
-gate: prd_user_flow
+gate: design
 status: pending
 next_actor: human
 ---
 
-# Human Approval Request
+# Design Approval Request
 
 ## Decision
 
@@ -15,7 +15,7 @@ next_actor: human
 
 ## Notes
 
-Review the PRD and user flow artifacts, then replace this pending request with the human decision.
+Review the PRD, user flow, and prototype brief, then replace this pending request with the human decision.
 
 ## Constraints
 

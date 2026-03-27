@@ -20,9 +20,9 @@ const ACTOR_LABEL: Record<Actor, string> = {
 };
 
 const TYPE_ICON: Record<StepType, string> = {
-  llm: "LLM",
+  ai_routing: "AI",
   script: "SCR",
-  human_gate: "GATE",
+  human_approval_gate: "GATE",
 };
 
 function formatTimestamp(ts?: string): string {

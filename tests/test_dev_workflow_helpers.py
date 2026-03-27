@@ -76,12 +76,12 @@ class DevWorkflowHelperTests(unittest.TestCase):
         result = next_step.get_next_step(task_dir)
 
         self.assertEqual(result["stage"], "draft_user_flow")
-        self.assertIn("Human approval", result["message"])
-        self.assertIn("handoffs/25-human-approval.md", result["action"])
+        self.assertIn("prototype brief", result["message"])
+        self.assertIn("handoffs/22-prototype-brief.md", result["action"])
 
     def test_next_step_returns_done_for_completed_tasks(self):
         next_step = load_module(NEXT_STEP_SCRIPT, "dev_workflow_next_step")
-        tmpdir, task_dir = self.make_task(stage="next_cycle", status="done")
+        tmpdir, task_dir = self.make_task(stage="update_backlog_and_debt", status="done")
         self.addCleanup(tmpdir.cleanup)
 
         result = next_step.get_next_step(task_dir)
@@ -90,12 +90,12 @@ class DevWorkflowHelperTests(unittest.TestCase):
 
     def test_next_step_stops_when_task_is_waiting(self):
         next_step = load_module(NEXT_STEP_SCRIPT, "dev_workflow_next_step")
-        tmpdir, task_dir = self.make_task(stage="human_approval_gate", status="waiting")
+        tmpdir, task_dir = self.make_task(stage="design_approval_gate", status="waiting")
         self.addCleanup(tmpdir.cleanup)
 
         result = next_step.get_next_step(task_dir)
 
-        self.assertEqual(result["stage"], "human_approval_gate")
+        self.assertEqual(result["stage"], "design_approval_gate")
         self.assertIn("waiting", result["message"])
 
     def test_validate_task_reports_missing_frontmatter(self):
@@ -181,7 +181,7 @@ class DevWorkflowHelperTests(unittest.TestCase):
         )
 
         self.assertEqual(state["stage"], "draft_user_flow")
-        self.assertEqual(state["current_phase"], "document_authoring")
+        self.assertEqual(state["current_phase"], "design")
         self.assertEqual(state["status"], "waiting")
         self.assertEqual(state["current_actor"], "human")
         self.assertEqual(state["round"], 1)
@@ -202,7 +202,7 @@ class DevWorkflowHelperTests(unittest.TestCase):
         )
 
         self.assertEqual(event["task_id"], "TASK-2026-03-15-helper-demo")
-        self.assertEqual(event["phase"], "document_authoring")
+        self.assertEqual(event["phase"], "design")
         self.assertEqual(event["stage"], "draft_prd")
         self.assertEqual(event["actor"], "codex")
         self.assertEqual(event["artifact"], "handoffs/10-prd.md")
@@ -240,7 +240,7 @@ class TestEnforcementIntegration(unittest.TestCase):
         state = {
             "task_id": "TASK-enforce-test",
             "status": "active",
-            "current_phase": "intention_framing",
+            "current_phase": "research",
             "stage": stage,
             "round": 0,
             "current_actor": actor,
@@ -274,7 +274,7 @@ class TestEnforcementIntegration(unittest.TestCase):
 
     def test_rejects_unapproved_human_gate(self):
         update_state = load_module(UPDATE_STATE_SCRIPT, "update_task_state")
-        task_dir = self.make_task(stage="human_approval_gate", actor="human")
+        task_dir = self.make_task(stage="design_approval_gate", actor="human")
         for name, content in [
             ("10-prd.md", "---\ntask_id: T\n---\n## Purpose\nX\n## Scope\nX"),
             ("20-user-flow.md", "---\ntask_id: T\n---\n## Entry Point\nX\n## Steps\nX\n## Completion\nX"),
@@ -326,7 +326,7 @@ class TestEnforcementIntegration(unittest.TestCase):
         state = update_state.update_task_state(task_dir, stage="classify_task", current_actor="codex")
         self.assertEqual(state["stage"], "classify_task")
         self.assertEqual(state["current_actor"], "codex")
-        self.assertEqual(state["current_phase"], "intention_framing")
+        self.assertEqual(state["current_phase"], "research")
 
 
 if __name__ == "__main__":

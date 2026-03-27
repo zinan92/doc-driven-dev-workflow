@@ -5,7 +5,8 @@
 This document is the canonical instruction set for document-driven software delivery using raw terminal sessions.
 
 For the higher-level end-to-end product lifecycle, read `docs/build-anything-workflow.md`.
-This file defines the currently enforced execution model, not the entire possible lifecycle.
+The machine-readable source of truth lives in `docs/canonical-workflow.json`, which currently defines 5 phases and 22 stages.
+This prose file is the human-readable explanation of that execution model.
 
 It exists to minimize drift, ambiguity, and low-quality execution by separating:
 

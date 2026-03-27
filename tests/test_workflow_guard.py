@@ -48,7 +48,7 @@ class TestActorValidation:
 
     def test_human_gate_rejects_codex(self, workflow):
         with pytest.raises(GuardError, match="requires actor"):
-            validate_actor(workflow, "human_approval_gate", "codex")
+            validate_actor(workflow, "design_approval_gate", "codex")
 
     def test_claude_code_owns_batch_execution(self, workflow):
         assert validate_actor(workflow, "claude_code_batch_execution", "claude_code") is None
@@ -149,7 +149,7 @@ class TestEventConsistency:
             validate_event_consistency("stage_completed", "draft_prd", state)
 
     def test_task_completed_without_done_status(self):
-        state = {"stage": "next_cycle", "status": "active"}
+        state = {"stage": "update_backlog_and_debt", "status": "active"}
         with pytest.raises(GuardError, match="Cannot log task_completed"):
             validate_event_consistency("task_completed", None, state)
 
