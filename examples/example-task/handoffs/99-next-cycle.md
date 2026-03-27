@@ -2,9 +2,9 @@
 task_id: "TASK-2026-03-15-example-greeter"
 author: codex
 role: planner
-stage: next_cycle
+stage: capture_next_cycle
 status: draft
-next_actor: human
+next_actor: codex
 ---
 
 # Next Cycle

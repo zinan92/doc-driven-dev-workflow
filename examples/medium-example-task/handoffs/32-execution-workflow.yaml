@@ -5,7 +5,7 @@ steps:
   - id: backend_batch
     name: "Implement backend feed read model"
     actor: claude_code
-    step_type: llm
+    step_type: ai_routing
     inputs:
       - handoffs/10-prd.md
       - handoffs/30-implementation-plan.md
@@ -28,7 +28,7 @@ steps:
   - id: backend_review
     name: "Review backend batch"
     actor: codex
-    step_type: llm
+    step_type: ai_routing
     inputs:
       - handoffs/50-claude-batch-r1.md
     outputs:

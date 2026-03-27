@@ -22,7 +22,7 @@ steps:
   - id: review_gate
     name: "Approve product flow"
     actor: human
-    step_type: human_gate
+    step_type: human_approval_gate
     goal: "Confirm this user flow before planning"
     inputs:
       - "handoffs/20-user-flow.md"

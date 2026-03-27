@@ -126,7 +126,7 @@ This repository now has two valid workflow views:
    The full product lifecycle:
    `Research -> Design -> Development -> Packaging -> Maintenance`
 2. **Canonical workflow**
-   The currently enforced 15-stage execution model used by scripts and the dashboard
+   The currently enforced 22-stage execution model used by scripts and the dashboard
 
 The Build Anything workflow is the strategic model.
 The canonical workflow is the operational model.
@@ -157,16 +157,16 @@ flowchart LR
 
 | Build Anything phase | Canonical workflow mapping |
 |------|-----------------------------|
-| Research | Upstream of the current enforced flow; should happen before or at the start of Stage 0 |
-| Design | Stages 0-8 |
-| Development | Stages 9-12 |
-| Packaging | Stage 13 |
-| Maintenance | Stage 14 |
+| Research | Stages 0-4 |
+| Design | Stages 5-12 |
+| Development | Stages 13-16 |
+| Packaging | Stages 17-19 |
+| Maintenance | Stages 20-21 |
 
 Important:
 
-- Research is recommended as a first-class lifecycle phase even though it is not yet modeled in `docs/canonical-workflow.json`
-- Packaging and Maintenance are separated conceptually even though the current canonical workflow groups them inside `integration_cleanup`
+- Research is now a first-class canonical phase with anchor research and evidence collection stages
+- Packaging and Maintenance are now modeled as distinct canonical phases rather than being collapsed into cleanup
 
 ## Task Lifecycle
 
@@ -174,19 +174,26 @@ The canonical lifecycle is:
 
 1. Clarify objective
 2. Classify task and estimate size
-3. Draft PRD
-4. Review PRD against the real codebase or environment
-5. Draft user flow
-6. Human approval gate for PRD and user flow
-7. Draft implementation plan
-8. Review implementation plan
-9. Write execution prompt for Claude Code
-10. Claude Code executes in batches
-11. Codex reviews each batch
-12. Gate each major phase
-13. Claude Code performs final revision
-14. Integrate, merge, and clean up
-15. Reflect and define the next cycle
+3. Run product research
+4. Collect reference evidence
+5. Research approval gate
+6. Draft PRD
+7. Review PRD against the real codebase or environment
+8. Draft user flow
+9. Draft prototype brief
+10. Design approval gate
+11. Draft implementation plan
+12. Review implementation plan
+13. Write execution prompt for Claude Code
+14. Claude Code executes in batches
+15. Codex reviews each batch
+16. Gate each major phase
+17. Claude Code performs final revision
+18. Integrate and verify
+19. Prepare release package
+20. Delivery approval gate
+21. Capture the next cycle
+22. Update backlog and debt
 
 Default delivery model by task size:
 
@@ -243,7 +250,7 @@ Guidance:
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 Goal:
 
@@ -266,7 +273,7 @@ Runtime rules:
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 Required outputs:
 
@@ -275,11 +282,48 @@ Required outputs:
 - estimate summary
 - rationale for size
 
-### Stage 2: Draft PRD
+### Stage 2: Run Product Research
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
+
+Required outputs:
+
+- primary anchor
+- secondary anchor
+- similarity note
+- recommendation brief
+
+### Stage 3: Collect Reference Evidence
+
+Owner: `Codex`
+
+Step type: `ai_routing`
+
+Required outputs:
+
+- key page screenshots
+- key flow screenshots
+- source links
+
+### Stage 4: Research Approval Gate
+
+Owner: `human`
+
+Step type: `human_approval_gate`
+
+Approval is required for:
+
+- primary and secondary anchors
+- evidence set quality
+- the recommendation direction that will feed design
+
+### Stage 5: Draft PRD
+
+Owner: `Codex`
+
+Step type: `ai_routing`
 
 Required PRD contents:
 
@@ -292,11 +336,11 @@ Required PRD contents:
 - constraints
 - terminology
 
-### Stage 3: Review PRD Against Reality
+### Stage 6: Review PRD Against Reality
 
 Owner: `Codex`
 
-Step type: `llm` plus script-assisted repo inspection
+Step type: `ai_routing` plus script-assisted repo inspection
 
 Purpose:
 
@@ -308,11 +352,11 @@ Required outputs:
 - contradiction list resolved
 - explicit baseline assumptions
 
-### Stage 4: Draft User Flow
+### Stage 7: Draft User Flow
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 This step must produce both:
 
@@ -327,16 +371,29 @@ Structured YAML requirements:
 - every step must define `failure`
 - every step must define `next`
 
-### Stage 5: Human Approval Gate
+### Stage 8: Draft Prototype Brief
+
+Owner: `Codex`
+
+Step type: `ai_routing`
+
+This step must produce:
+
+- core screens to emulate or prototype
+- key interactions to preserve
+- visual direction anchored to the approved research evidence
+
+### Stage 9: Design Approval Gate
 
 Owner: `human`
 
-Step type: `human_gate`
+Step type: `human_approval_gate`
 
 Approval is required for:
 
 - PRD
 - user flow
+- prototype brief
 
 Without approval, the workflow must not proceed to implementation planning.
 
@@ -346,11 +403,11 @@ Artifact rules:
 - the human decision must overwrite the file with the final approval or revision outcome before implementation planning proceeds
 - once the gate is pending, machine state should move to `status: waiting`
 
-### Stage 6: Draft Implementation Plan
+### Stage 10: Draft Implementation Plan
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 The plan must translate the approved PRD and approved user flow into:
 
@@ -361,11 +418,11 @@ The plan must translate the approved PRD and approved user flow into:
 - verification steps
 - stop conditions
 
-### Stage 7: Review Implementation Plan
+### Stage 11: Review Implementation Plan
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 Purpose:
 
@@ -378,11 +435,11 @@ Required outputs:
 - clarified verification commands
 - clarified dependency boundaries
 
-### Stage 8: Write Execution Prompt
+### Stage 12: Write Execution Prompt
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 This prompt is a formal handoff, not an informal chat message.
 
@@ -398,11 +455,11 @@ It must define:
 - report format
 - forbidden behaviors
 
-### Stage 9: Claude Code Executes in Batches
+### Stage 13: Claude Code Executes in Batches
 
 Owner: `Claude Code`
 
-Step type: `llm` plus scripts
+Step type: `ai_routing` plus scripts
 
 Rules:
 
@@ -418,11 +475,11 @@ Each batch report must contain:
 - result
 - next proposed batch
 
-### Stage 10: Codex Reviews Each Batch
+### Stage 14: Codex Reviews Each Batch
 
 Owner: `Codex`
 
-Step type: `llm`
+Step type: `ai_routing`
 
 Review must cover:
 
@@ -439,7 +496,7 @@ Batch gate decisions:
 - `fix_before_proceeding`
 - `stop_and_rethink`
 
-### Stage 11: Gate Each Major Phase
+### Stage 15: Gate Each Major Phase
 
 Owner: `Codex`, with human escalation when needed
 
@@ -454,7 +511,7 @@ Typical phase gates:
 - data model before feature layer
 - refactor before product polish
 
-### Stage 12: Final Revision
+### Stage 16: Final Revision
 
 Owner: `Claude Code`
 
@@ -463,9 +520,11 @@ Rule:
 - after the second Codex review in the simplified flow, Claude Code performs one final revision
 - that output is treated as the final version for v1 unless human escalation is required
 
-### Stage 13: Integrate, Merge, and Clean Up
+### Stage 17: Integrate and Verify
 
 Owners: `human` and `Codex`
+
+Step type: `script`
 
 Required completion work:
 
@@ -473,13 +532,34 @@ Required completion work:
 - final build verification when applicable
 - branch hygiene
 - merge readiness check
-- merge
-- cleanup of branches, worktrees, and temp files
-- documented follow-ups
+- documented verification evidence
 
-Delivery is complete only when integration is clean, not when coding stops.
+Delivery is not ready until integration is clean and the verification artifacts exist.
 
-### Stage 14: Reflect and Define the Next Cycle
+### Stage 18: Prepare Release Package
+
+Owners: `Codex`
+
+Step type: `ai_routing`
+
+Required completion work:
+
+- release notes or delivery summary
+- demo assets or screenshots when applicable
+- explicit delivery package contents
+
+### Stage 19: Delivery Approval Gate
+
+Owners: `human`
+
+Step type: `human_approval_gate`
+
+Required outputs:
+
+- approval or rejection of the delivery package
+- explicit release decision
+
+### Stage 20: Capture the Next Cycle
 
 Owners: `human` and `Codex`
 
@@ -491,6 +571,18 @@ Required reflection topics:
 - product polish
 - performance improvement opportunities
 - next spec or plan candidate
+
+### Stage 21: Update Backlog and Debt
+
+Owners: `Codex`
+
+Step type: `ai_routing`
+
+Required outputs:
+
+- backlog updates
+- debt ledger updates
+- deferred opportunities captured in durable form
 
 ## Simplified Small-Task Review Loop
 
@@ -533,10 +625,14 @@ tasks/TASK-YYYY-MM-DD-short-name/
     00-intake.md
     05-task-classification.yaml
     08-scope-estimate.md
+    09-product-research.md
+    09-reference-evidence.md
+    09-research-approval.md
     10-prd.md
     15-prd-reality-review.md
     20-user-flow.md
     21-user-flow.yaml
+    22-prototype-brief.md
     25-human-approval.md
     30-implementation-plan.md
     32-execution-workflow.yaml
@@ -544,11 +640,13 @@ tasks/TASK-YYYY-MM-DD-short-name/
     40-execution-prompt.md
     50-claude-batch-r1.md
     60-codex-review-r1.md
-    70-claude-batch-r2.md
-    80-codex-review-r2.md
+    85-phase-gate.md
     90-claude-final.md
     95-integration-checklist.md
+    96-release-package.md
+    97-delivery-approval.md
     99-next-cycle.md
+    100-backlog-and-debt.md
   system/
     state.json
     run-log.jsonl
@@ -639,7 +737,7 @@ Every executable step should be expressible in this shape:
 id: prd_draft
 name: Draft PRD
 actor: codex
-step_type: llm
+step_type: ai_routing
 inputs:
   - handoffs/00-intake.md
 outputs:
@@ -669,8 +767,8 @@ Required step fields:
 Allowed `step_type` values:
 
 - `script`
-- `llm`
-- `human_gate`
+- `ai_routing`
+- `human_approval_gate`
 
 ## User Flow Outputs
 

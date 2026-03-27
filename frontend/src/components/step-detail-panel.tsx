@@ -2,7 +2,21 @@ import type { WorkflowStep } from "../types/workflow";
 import { MetadataList } from "./metadata-list";
 
 interface StepDetailPanelProps {
-  readonly step: Pick<WorkflowStep, "id" | "title" | "actor" | "stepType" | "purpose" | "inputs" | "outputs" | "validation" | "failure" | "next">;
+  readonly step: Pick<
+    WorkflowStep,
+    | "id"
+    | "title"
+    | "actor"
+    | "stepType"
+    | "purpose"
+    | "outputSummary"
+    | "recommendedSkills"
+    | "inputs"
+    | "outputs"
+    | "validation"
+    | "failure"
+    | "next"
+  >;
 }
 
 const ACTOR_LABEL: Record<string, string> = {
@@ -22,6 +36,8 @@ export function StepDetailPanel({ step }: StepDetailPanelProps) {
       </div>
       <p className="text-xs text-gray-400 mb-3">{step.purpose}</p>
       <dl>
+        <MetadataList label="Output Summary" items={step.outputSummary} />
+        <MetadataList label="Recommended Skills" items={step.recommendedSkills} />
         <MetadataList label="Inputs" items={step.inputs} />
         <MetadataList label="Outputs" items={step.outputs} />
         <MetadataList label="Validation" items={step.validation} />

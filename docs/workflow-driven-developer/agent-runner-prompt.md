@@ -65,7 +65,7 @@ State-writing rules:
 - When a stage is completed, call `append_task_event.py --event stage_completed`.
 - When waiting for human approval, set status to `waiting`, set an explicit `stop_reason`, and append `stage_waiting`.
 - When blocked, set status to `blocked` and set an explicit `stop_reason`.
-- When the task is complete, set stage to `next_cycle`, status to `done`, and append `task_completed`.
+- When the task is complete, set stage to `update_backlog_and_debt`, status to `done`, and append `task_completed`.
 
 Do not hand-edit `system/state.json` or `system/run-log.jsonl` unless the scripts are broken.
 

@@ -113,7 +113,7 @@ const STAGE_SCHEMAS: Record<string, string> = {
     checks:
       - YAML parses correctly
       - each step has: id, name, actor, step_type, goal, inputs, outputs, validation, next
-      - step_type is one of: script, llm, human_gate`,
+      - step_type is one of: script, ai_routing, human_approval_gate`,
 
   draft_prototype_brief: `step_contract:
   id: draft_prototype_brief

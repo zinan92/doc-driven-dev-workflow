@@ -27,14 +27,14 @@ The operator first sees the full workflow graph, identifies the current stage, t
 2. The interface highlights the task's current or selected stage.
 3. The operator reads the summary bar to understand the current stage, actor, and task status.
 4. The operator clicks a workflow node to inspect that step in detail.
-5. The detail panel updates to show purpose, actor, inputs, outputs, validation, and next step.
+5. The detail panel updates to show phase, purpose, output summary, recommended skills, actor, inputs, outputs, validation, and next step.
 6. The artifact panel shows the relevant markdown, YAML, or state snapshot for the selected step.
 7. The operator clicks an event in the replay timeline to move to a historical point in the workflow.
 8. The graph, summary bar, detail panel, and artifact preview all update to match that point in time.
 
 ## System Responses
 
-- On load, the system renders the full 15-stage workflow and the current task summary.
+- On load, the system renders the full 22-stage workflow across the 5 canonical phases and the current task summary.
 - On node selection, the system updates the detail panel and artifact preview.
 - On timeline selection, the system reconstructs the workflow state for the selected event.
 - If a stage has no direct artifact, the system still shows its canonical meaning and nearest available linked evidence.

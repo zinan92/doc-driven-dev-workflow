@@ -145,9 +145,10 @@ This is the first visual priority on page load.
 
 Requirements:
 
-- show all 15 canonical stages
+- show all 22 canonical stages across the 5 canonical phases
 - show stage status
 - show actor on each node
+- show phase grouping or labeling
 - highlight selected node
 - visually distinguish:
   - completed
@@ -165,8 +166,11 @@ When a node is selected, show:
 - step name
 - stage id / canonical stage
 - actor
-- step type: `llm`, `script`, or `human_gate`
+- phase
+- step type: `ai_routing`, `script`, or `human_approval_gate`
 - purpose
+- output summary
+- recommended skills
 - input artifacts
 - output artifacts
 - validation contract
@@ -211,19 +215,26 @@ The graph should render the full canonical lifecycle as explicit nodes:
 
 1. Clarify Objective
 2. Classify Task and Estimate Size
-3. Draft PRD
-4. Review PRD Against Reality
-5. Draft User Flow
-6. Human Approval Gate
-7. Draft Implementation Plan
-8. Review Implementation Plan
-9. Write Execution Prompt
-10. Claude Code Executes in Batches
-11. Codex Reviews Each Batch
-12. Gate Each Major Phase
-13. Final Revision
-14. Integrate, Merge, and Clean Up
-15. Reflect and Define the Next Cycle
+3. Run Product Research
+4. Collect Reference Evidence
+5. Research Approval Gate
+6. Draft PRD
+7. Review PRD Against Reality
+8. Draft User Flow
+9. Draft Prototype Brief
+10. Design Approval Gate
+11. Draft Implementation Plan
+12. Review Implementation Plan
+13. Write Execution Prompt
+14. Claude Code Executes in Batches
+15. Codex Reviews Each Batch
+16. Gate Each Major Phase
+17. Final Revision
+18. Integrate and Verify
+19. Prepare Release Package
+20. Delivery Approval Gate
+21. Capture Next Cycle
+22. Update Backlog and Debt
 
 For the example task, some nodes may map to simplified or collapsed real artifacts. The UI should still preserve the full canonical shape.
 

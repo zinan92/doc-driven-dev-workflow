@@ -1,7 +1,7 @@
 # Workflow Observer Data Model
 
-**Version:** 0.1  
-**Date:** 2026-03-18  
+**Version:** 0.2
+**Date:** 2026-03-27
 **Status:** Draft
 
 ---
@@ -25,12 +25,12 @@ Do not put full observer summary into `state.json` in V1.
 {
   "task_id": "TASK-2026-03-18-example",
   "status": "active",
-  "current_phase": "document_authoring",
-  "current_stage": "draft_user_flow",
+  "current_phase": "design",
+  "current_stage": "draft_prototype_brief",
   "current_actor": "codex",
   "round": 1,
-  "updated_at": "2026-03-18T11:20:00Z",
-  "last_artifact": "handoffs/20-user-flow.md",
+  "updated_at": "2026-03-27T11:20:00Z",
+  "last_artifact": "handoffs/22-prototype-brief.md",
   "stop_reason": null
 }
 ```
@@ -53,10 +53,11 @@ Do not put full observer summary into `state.json` in V1.
 type TaskStatus = "active" | "waiting" | "blocked" | "done";
 
 type WorkflowPhase =
-  | "intention_framing"
-  | "document_authoring"
-  | "code_execution"
-  | "integration_cleanup";
+  | "research"
+  | "design"
+  | "development"
+  | "packaging"
+  | "maintenance";
 
 type WorkflowActor =
   | "human"
@@ -70,28 +71,37 @@ type WorkflowActor =
 ## 3. Canonical Stage to Phase Mapping
 
 ```yaml
-intention_framing:
+research:
   - clarify_objective
   - classify_task
+  - product_research
+  - collect_reference_evidence
+  - research_approval_gate
 
-document_authoring:
+design:
   - draft_prd
   - prd_reality_review
   - draft_user_flow
-  - human_approval_gate
+  - draft_prototype_brief
+  - design_approval_gate
   - draft_implementation_plan
   - review_implementation_plan
   - write_execution_prompt
 
-code_execution:
+development:
   - claude_code_batch_execution
   - codex_reviews_batch
   - gate_major_phase
   - final_revision
 
-integration_cleanup:
-  - integrate_merge_cleanup
-  - next_cycle
+packaging:
+  - integrate_and_verify
+  - prepare_release_package
+  - delivery_approval_gate
+
+maintenance:
+  - capture_next_cycle
+  - update_backlog_and_debt
 ```
 
 ### Canonical Stage Order
@@ -99,19 +109,26 @@ integration_cleanup:
 ```yaml
 1: clarify_objective
 2: classify_task
-3: draft_prd
-4: prd_reality_review
-5: draft_user_flow
-6: human_approval_gate
-7: draft_implementation_plan
-8: review_implementation_plan
-9: write_execution_prompt
-10: claude_code_batch_execution
-11: codex_reviews_batch
-12: gate_major_phase
-13: final_revision
-14: integrate_merge_cleanup
-15: next_cycle
+3: product_research
+4: collect_reference_evidence
+5: research_approval_gate
+6: draft_prd
+7: prd_reality_review
+8: draft_user_flow
+9: draft_prototype_brief
+10: design_approval_gate
+11: draft_implementation_plan
+12: review_implementation_plan
+13: write_execution_prompt
+14: claude_code_batch_execution
+15: codex_reviews_batch
+16: gate_major_phase
+17: final_revision
+18: integrate_and_verify
+19: prepare_release_package
+20: delivery_approval_gate
+21: capture_next_cycle
+22: update_backlog_and_debt
 ```
 
 ---
@@ -121,9 +138,9 @@ integration_cleanup:
 Each line is a single JSON object.
 
 ```json
-{"timestamp":"2026-03-18T11:00:00Z","event":"stage_entered","task_id":"TASK-2026-03-18-example","phase":"document_authoring","stage":"draft_prd","actor":"codex","artifact":null,"status":"active","round":1}
-{"timestamp":"2026-03-18T11:05:00Z","event":"artifact_written","task_id":"TASK-2026-03-18-example","phase":"document_authoring","stage":"draft_prd","actor":"codex","artifact":"handoffs/10-prd.md","status":"active","round":1}
-{"timestamp":"2026-03-18T11:15:00Z","event":"stage_completed","task_id":"TASK-2026-03-18-example","phase":"document_authoring","stage":"draft_prd","actor":"codex","artifact":"handoffs/10-prd.md","status":"active","round":1}
+{"timestamp":"2026-03-27T11:00:00Z","event":"stage_entered","task_id":"TASK-2026-03-27-example","phase":"research","stage":"product_research","actor":"codex","artifact":null,"status":"active","round":1}
+{"timestamp":"2026-03-27T11:05:00Z","event":"artifact_written","task_id":"TASK-2026-03-27-example","phase":"research","stage":"product_research","actor":"codex","artifact":"handoffs/09-product-research.md","status":"active","round":1}
+{"timestamp":"2026-03-27T11:15:00Z","event":"stage_completed","task_id":"TASK-2026-03-27-example","phase":"research","stage":"product_research","actor":"codex","artifact":"handoffs/09-product-research.md","status":"active","round":1}
 ```
 
 ### Event Fields

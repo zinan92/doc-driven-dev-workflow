@@ -29,7 +29,7 @@ Also use these example-task artifacts as the source data to visualize:
 
 Product to build:
 - A single-task, read-only, manual replay cockpit
-- The first screen must prioritize the full 15-stage workflow graph
+- The first screen must prioritize the full 22-stage workflow graph grouped by the 5 canonical phases
 - The operator should understand current progress within 10 seconds
 - The UI is for one example task only in V1
 - Do not add approvals, editing, mutation, or multi-task support
@@ -44,7 +44,7 @@ What the UI must show:
 Critical interaction rules:
 - Clicking a workflow node updates the step detail and artifact preview
 - Clicking a timeline event updates the selected workflow state
-- The workflow graph should preserve all 15 canonical stages even if the example task uses a simplified flow
+- The workflow graph should preserve all 22 canonical stages even if the example task uses a simplified flow
 - If an exact artifact does not exist for a canonical stage, show the canonical stage meaning plus the closest supporting evidence
 
 Visual direction:
@@ -70,6 +70,6 @@ Implementation expectations:
 Output expectations:
 - Summarize what you built
 - List which files were added or changed
-- Explain any assumptions made when mapping the example task into the 15-stage canonical workflow
+- Explain any assumptions made when mapping the example task into the 22-stage canonical workflow
 - Report what remains deferred for V2
 ```

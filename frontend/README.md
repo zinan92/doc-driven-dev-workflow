@@ -7,7 +7,7 @@ Read-only replay cockpit for visualizing Doc-Driven Development Workflow tasks.
 ```bash
 cd frontend
 npm install
-npm run build:data   # normalize example-task artifacts into src/data/example-task.json
+npm run build:data   # normalize discovered task artifacts into src/data/workflow-snapshots.json
 npm run dev          # start dev server
 ```
 
@@ -16,13 +16,13 @@ npm run dev          # start dev server
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Start Vite dev server |
-| `npm run build:data` | Rebuild normalized example-task snapshot |
+| `npm run build:data` | Rebuild normalized workflow snapshots |
 | `npm test` | Run all Vitest tests |
 | `npm run build` | TypeScript check + production build |
 
 ## Architecture
 
-- `scripts/build-example-task.ts` — reads `examples/example-task/` artifacts, emits `src/data/example-task.json`
+- `scripts/build-example-task.ts` — reads discovered workflow task directories and emits `src/data/workflow-snapshots.json`
 - `src/data/canonical-stages.ts` — the 22-stage canonical workflow definition
 - `src/lib/map-artifacts-to-stages.ts` — maps handoff artifacts to canonical stages
 - `src/lib/build-replay-snapshots.ts` — builds replayable state from run-log events

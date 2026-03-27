@@ -5,7 +5,7 @@ steps:
   - id: implementation_batch_1
     name: "Implement greeting helper and command"
     actor: claude_code
-    step_type: llm
+    step_type: ai_routing
     inputs:
       - handoffs/10-prd.md
       - handoffs/30-implementation-plan.md
@@ -28,7 +28,7 @@ steps:
   - id: codex_review_1
     name: "Review first batch"
     actor: codex
-    step_type: llm
+    step_type: ai_routing
     inputs:
       - handoffs/50-claude-batch-r1.md
     outputs:

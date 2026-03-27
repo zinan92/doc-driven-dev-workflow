@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-27T06:32:29.453Z",
+  "generatedAt": "2026-03-27T09:33:13.033Z",
   "snapshots": [
     {
       "id": "example-task",
@@ -8,15 +8,15 @@
       "state": {
         "task_id": "TASK-2026-03-15-example-greeter",
         "status": "done",
-        "stage": "next_cycle",
+        "stage": "update_backlog_and_debt",
         "round": 2,
-        "current_actor": "human",
-        "last_artifact": "handoffs/99-next-cycle.md",
-        "stop_reason": "final_revision_completed",
+        "current_actor": "codex",
+        "last_artifact": "handoffs/100-backlog-and-debt.md",
+        "stop_reason": "delivery_approved",
         "current_phase": "maintenance",
         "updated_at": null
       },
-      "statusMd": "# TASK-2026-03-15-example-greeter Status\n\n- Current stage: `next_cycle`\n- Current owner: `human`\n- Current round or batch: `2`\n- Latest conclusion: `Final revision completed, integration checklist closed, and next-cycle notes captured.`\n- Blockers: `None`\n- Next step: `Use handoffs/99-next-cycle.md to decide the next task.`\n",
+      "statusMd": "# TASK-2026-03-15-example-greeter Status\n\n- Current stage: `update_backlog_and_debt`\n- Current owner: `codex`\n- Current round or batch: `2`\n- Latest conclusion: `Delivery artifacts were approved, next-cycle notes were captured, and backlog/debt updates were recorded.`\n- Blockers: `None`\n- Next step: `Use handoffs/99-next-cycle.md and handoffs/100-backlog-and-debt.md to start the next task.`\n",
       "runLog": [
         {
           "timestamp": "2026-03-15T10:00:00Z",
@@ -82,6 +82,18 @@
           }
         },
         {
+          "filename": "100-backlog-and-debt.md",
+          "content": "# Backlog and Debt\n\n## Immediate Follow-Ups\n\n- Add a fully updated research phase example that includes `09-product-research.md` and `09-reference-evidence.md`.\n- Refresh the example run log so replay events show the new packaging and maintenance stages more explicitly.\n\n## Deferred Debt\n\n- Some historical example artifacts still use the earlier simplified flow naming and should be upgraded in a future pass.\n- The examples do not yet demonstrate a release package artifact with richer demo evidence.\n\n## Candidate Specs\n\n- Create a v2 example task that exercises all 22 canonical stages end to end.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-15-example-greeter",
+            "author": "codex",
+            "role": "strategist",
+            "stage": "update_backlog_and_debt",
+            "status": "draft",
+            "next_actor": "codex"
+          }
+        },
+        {
           "filename": "15-prd-reality-review.md",
           "content": "# PRD Reality Review\n\n## Baseline Checked\n\n- Repo path: `/path/to/example-repo`\n- Environment or service checked: `local python project layout`\n\n## Findings\n\n- The repo already uses Python entry scripts\n- Unit tests are the right verification layer for this example\n\n## Resolved Contradictions\n\n- No conflict between the PRD and the baseline\n- No missing dependency assumptions remain\n\n## Required PRD Corrections\n\n- Clarify that default greeting behavior is required\n- Clarify that tests should cover CLI and helper behavior\n\n## Approved Baseline Assumptions\n\n- Python is available\n- Unit tests can be run locally",
           "frontmatter": {
@@ -110,7 +122,7 @@
         },
         {
           "filename": "21-user-flow.yaml",
-          "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nflow_name: \"example-greeter\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: run_command\n    name: \"Run greeter command\"\n    actor: user\n    step_type: script\n    goal: \"Start the greeter\"\n    inputs:\n      - \"command invocation\"\n    outputs:\n      - \"parsed name or default path\"\n    validation:\n      type: schema\n      schema: \"cli_input_v1\"\n    next:\n      - print_greeting\n  - id: review_gate\n    name: \"Approve product flow\"\n    actor: human\n    step_type: human_gate\n    goal: \"Confirm this user flow before planning\"\n    inputs:\n      - \"handoffs/20-user-flow.md\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    next:\n      approve: \"implementation_plan\"\n      revise: \"user_flow\"\n      reject: end",
+          "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nflow_name: \"example-greeter\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: run_command\n    name: \"Run greeter command\"\n    actor: user\n    step_type: script\n    goal: \"Start the greeter\"\n    inputs:\n      - \"command invocation\"\n    outputs:\n      - \"parsed name or default path\"\n    validation:\n      type: schema\n      schema: \"cli_input_v1\"\n    next:\n      - print_greeting\n  - id: review_gate\n    name: \"Approve product flow\"\n    actor: human\n    step_type: human_approval_gate\n    goal: \"Confirm this user flow before planning\"\n    inputs:\n      - \"handoffs/20-user-flow.md\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    next:\n      approve: \"implementation_plan\"\n      revise: \"user_flow\"\n      reject: end",
           "frontmatter": {}
         },
         {
@@ -132,7 +144,7 @@
         },
         {
           "filename": "32-execution-workflow.yaml",
-          "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nworkflow_name: \"example-greeter-delivery\"\nstatus: draft\nsteps:\n  - id: implementation_batch_1\n    name: \"Implement greeting helper and command\"\n    actor: claude_code\n    step_type: llm\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - codex_review_1\n  - id: codex_review_1\n    name: \"Review first batch\"\n    actor: codex\n    step_type: llm\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - implementation_batch_2",
+          "content": "task_id: \"TASK-2026-03-15-example-greeter\"\nworkflow_name: \"example-greeter-delivery\"\nstatus: draft\nsteps:\n  - id: implementation_batch_1\n    name: \"Implement greeting helper and command\"\n    actor: claude_code\n    step_type: ai_routing\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - codex_review_1\n  - id: codex_review_1\n    name: \"Review first batch\"\n    actor: codex\n    step_type: ai_routing\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - implementation_batch_2",
           "frontmatter": {}
         },
         {
@@ -254,9 +266,9 @@
             "task_id": "TASK-2026-03-15-example-greeter",
             "author": "codex",
             "role": "planner",
-            "stage": "next_cycle",
+            "stage": "capture_next_cycle",
             "status": "draft",
-            "next_actor": "human"
+            "next_actor": "codex"
           }
         }
       ]
@@ -268,15 +280,15 @@
       "state": {
         "task_id": "TASK-2026-03-15-medium-feed-workbench",
         "status": "done",
-        "stage": "next_cycle",
+        "stage": "update_backlog_and_debt",
         "round": 4,
-        "current_actor": "human",
-        "last_artifact": "handoffs/99-next-cycle.md",
-        "stop_reason": "final_revision_completed",
+        "current_actor": "codex",
+        "last_artifact": "handoffs/100-backlog-and-debt.md",
+        "stop_reason": "delivery_approved",
         "current_phase": "maintenance",
         "updated_at": null
       },
-      "statusMd": "# TASK-2026-03-15-medium-feed-workbench Status\n\n- Current stage: `next_cycle`\n- Current owner: `human`\n- Current round or batch: `4`\n- Latest conclusion: `Backend and UI phases completed, integration closed, and next-cycle follow-ups captured.`\n- Blockers: `None`\n- Next step: `Review handoffs/99-next-cycle.md before starting the next phase of work.`\n",
+      "statusMd": "# TASK-2026-03-15-medium-feed-workbench Status\n\n- Current stage: `update_backlog_and_debt`\n- Current owner: `codex`\n- Current round or batch: `4`\n- Latest conclusion: `Backend and UI delivery artifacts were approved, next-cycle notes were captured, and backlog/debt updates were recorded.`\n- Blockers: `None`\n- Next step: `Review handoffs/99-next-cycle.md and handoffs/100-backlog-and-debt.md before starting the next phase of work.`\n",
       "runLog": [
         {
           "timestamp": "2026-03-15T09:00:00Z",
@@ -347,6 +359,18 @@
           }
         },
         {
+          "filename": "100-backlog-and-debt.md",
+          "content": "# Backlog and Debt\n\n## Immediate Follow-Ups\n\n- Add a medium example that includes explicit `85-phase-gate.md`, `96-release-package.md`, and `97-delivery-approval.md` artifacts.\n- Update replay events to show packaging and maintenance transitions with richer event coverage.\n\n## Deferred Debt\n\n- The current medium example still compresses some delivery artifacts into the integration checklist.\n- Cross-phase dependencies are visible in prose but not yet represented by dedicated example metadata.\n\n## Candidate Specs\n\n- Create a medium-to-large example that demonstrates a blocked phase gate, revised release package, and resumed delivery flow.",
+          "frontmatter": {
+            "task_id": "TASK-2026-03-15-medium-feed-workbench",
+            "author": "codex",
+            "role": "strategist",
+            "stage": "update_backlog_and_debt",
+            "status": "draft",
+            "next_actor": "codex"
+          }
+        },
+        {
           "filename": "15-prd-reality-review.md",
           "content": "# PRD Reality Review\n\n## Baseline Checked\n\n- Repo path: `/path/to/feed-workbench-repo`\n- Environment or service checked: `monorepo with backend and frontend directories`\n\n## Findings\n\n- The backend and frontend can evolve independently only if the feed payload is locked first\n- UI work should be blocked until the backend shape is verified\n\n## Resolved Contradictions\n\n- The PRD now explicitly separates backend and UI phases\n- Acceptance criteria now require a gate artifact\n\n## Required PRD Corrections\n\n- Clarify backend-first sequencing\n- Clarify that UI starts only after contract verification\n\n## Approved Baseline Assumptions\n\n- Shared repo layout exists\n- Separate verification commands are available for backend and UI",
           "frontmatter": {
@@ -375,7 +399,7 @@
         },
         {
           "filename": "21-user-flow.yaml",
-          "content": "task_id: \"TASK-2026-03-15-medium-feed-workbench\"\nflow_name: \"medium-feed-workbench\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: open_feed\n    name: \"Open feed workbench\"\n    actor: user\n    step_type: script\n    goal: \"Load prioritized feed items\"\n    inputs:\n      - \"home route request\"\n    outputs:\n      - \"feed read model response\"\n    validation:\n      type: schema\n      schema: \"feed_read_model_v1\"\n    next:\n      - open_item\n  - id: approval_gate\n    name: \"Approve PRD and flow\"\n    actor: human\n    step_type: human_gate\n    goal: \"Confirm the product flow before planning\"\n    inputs:\n      - \"handoffs/20-user-flow.md\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    next:\n      approve: \"implementation_plan\"\n      revise: \"user_flow\"\n      reject: end",
+          "content": "task_id: \"TASK-2026-03-15-medium-feed-workbench\"\nflow_name: \"medium-feed-workbench\"\nauthor: codex\nrole: planner\nstage: user_flow\nstatus: draft\nsteps:\n  - id: open_feed\n    name: \"Open feed workbench\"\n    actor: user\n    step_type: script\n    goal: \"Load prioritized feed items\"\n    inputs:\n      - \"home route request\"\n    outputs:\n      - \"feed read model response\"\n    validation:\n      type: schema\n      schema: \"feed_read_model_v1\"\n    next:\n      - open_item\n  - id: approval_gate\n    name: \"Approve PRD and flow\"\n    actor: human\n    step_type: human_approval_gate\n    goal: \"Confirm the product flow before planning\"\n    inputs:\n      - \"handoffs/20-user-flow.md\"\n    outputs:\n      - approval_decision\n    validation:\n      type: enum\n      allowed:\n        - approve\n        - revise\n        - reject\n    next:\n      approve: \"implementation_plan\"\n      revise: \"user_flow\"\n      reject: end",
           "frontmatter": {}
         },
         {
@@ -397,7 +421,7 @@
         },
         {
           "filename": "32-execution-workflow.yaml",
-          "content": "task_id: \"TASK-2026-03-15-medium-feed-workbench\"\nworkflow_name: \"medium-feed-workbench-delivery\"\nstatus: draft\nsteps:\n  - id: backend_batch\n    name: \"Implement backend feed read model\"\n    actor: claude_code\n    step_type: llm\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - backend_review\n  - id: backend_review\n    name: \"Review backend batch\"\n    actor: codex\n    step_type: llm\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - phase_gate_backend",
+          "content": "task_id: \"TASK-2026-03-15-medium-feed-workbench\"\nworkflow_name: \"medium-feed-workbench-delivery\"\nstatus: draft\nsteps:\n  - id: backend_batch\n    name: \"Implement backend feed read model\"\n    actor: claude_code\n    step_type: ai_routing\n    inputs:\n      - handoffs/10-prd.md\n      - handoffs/30-implementation-plan.md\n      - handoffs/40-execution-prompt.md\n    outputs:\n      - handoffs/50-claude-batch-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Tasks Completed\n        - Files Changed\n        - Tests Run\n        - Result\n        - Next Proposed Batch\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - backend_review\n  - id: backend_review\n    name: \"Review backend batch\"\n    actor: codex\n    step_type: ai_routing\n    inputs:\n      - handoffs/50-claude-batch-r1.md\n    outputs:\n      - handoffs/60-codex-review-r1.md\n    validation:\n      type: required_sections\n      sections:\n        - Findings\n        - Required Changes\n        - Gate Decision\n    failure:\n      on_validation_error: retry_once\n      on_semantic_gap: escalate_to_human\n    next:\n      - phase_gate_backend",
           "frontmatter": {}
         },
         {
@@ -519,9 +543,9 @@
             "task_id": "TASK-2026-03-15-medium-feed-workbench",
             "author": "codex",
             "role": "planner",
-            "stage": "next_cycle",
+            "stage": "capture_next_cycle",
             "status": "draft",
-            "next_actor": "human"
+            "next_actor": "codex"
           }
         }
       ]
